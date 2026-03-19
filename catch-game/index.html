@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>תפוס את החיות! - לירי גיימס</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: #1a1a2e;
+            cursor: none;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        /* Start Screen */
+        #start-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #a18cd1 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            transition: opacity 0.5s ease;
+        }
+
+        #start-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .start-title {
+            font-size: 3em;
+            color: #fff;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .start-subtitle {
+            font-size: 1.2em;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 30px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .animals-preview {
+            font-size: 3em;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .animals-preview span {
+            animation: bounce-animal 1s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        .animals-preview span:nth-child(2) { animation-delay: 0.1s; }
+        .animals-preview span:nth-child(3) { animation-delay: 0.2s; }
+        .animals-preview span:nth-child(4) { animation-delay: 0.3s; }
+        .animals-preview span:nth-child(5) { animation-delay: 0.4s; }
+        .animals-preview span:nth-child(6) { animation-delay: 0.5s; }
+        .animals-preview span:nth-child(7) { animation-delay: 0.6s; }
+        .animals-preview span:nth-child(8) { animation-delay: 0.7s; }
+
+        @keyframes bounce-animal {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .start-btn {
+            padding: 18px 60px;
+            font-size: 1.5em;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(240, 87, 108, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(240, 87, 108, 0.6);
+        }
+
+        .back-link {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.1em;
+            background: rgba(0,0,0,0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+            transition: background 0.3s;
+            cursor: pointer;
+        }
+
+        .back-link:hover {
+            background: rgba(0,0,0,0.4);
+        }
+
+        /* HUD */
+        #hud {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            z-index: 50;
+            direction: rtl;
+        }
+
+        #hud.active {
+            display: flex;
+        }
+
+        .hud-item {
+            color: #fff;
+            font-size: 1.3em;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .hud-score {
+            font-size: 1.5em;
+            color: #ffe66d;
+        }
+
+        .hud-timer {
+            color: #ff6b6b;
+        }
+
+        .hud-back {
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9em;
+            background: rgba(255,255,255,0.2);
+            padding: 6px 16px;
+            border-radius: 15px;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+        }
+
+        /* Game Over Screen */
+        #game-over {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+
+        #game-over.active {
+            display: flex;
+        }
+
+        .game-over-title {
+            font-size: 3em;
+            color: #ffe66d;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .game-over-score {
+            font-size: 2em;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .game-over-catches {
+            font-size: 1.2em;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 30px;
+            text-align: center;
+            line-height: 2;
+        }
+
+        .game-over-catches div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .game-over-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .game-over-btn {
+            padding: 14px 40px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-family: inherit;
+        }
+
+        .game-over-btn:hover {
+            transform: scale(1.08);
+        }
+
+        .btn-play-again {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: #fff;
+        }
+
+        .btn-home {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            border: 2px solid rgba(255,255,255,0.4);
+        }
+
+        /* Catch effect */
+        .catch-popup {
+            position: fixed;
+            pointer-events: none;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ffe66d;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            z-index: 80;
+            animation: popup-rise 1s ease-out forwards;
+        }
+
+        @keyframes popup-rise {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-80px) scale(1.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Start Screen -->
+    <div id="start-screen">
+        <a href="../index.html" class="back-link">🏠 חזרה לתפריט</a>
+        <div class="start-title">תפוס את החיות! 🎯</div>
+        <div class="start-subtitle">עזרו לילדה החמודה לתפוס את כל החיות ולאסוף נקודות!</div>
+        <div class="animals-preview">
+            <span>🦄</span>
+            <span>🐱</span>
+            <span>🐰</span>
+            <span>🐭</span>
+            <span>🐼</span>
+            <span>🐻</span>
+            <span>🐘</span>
+            <span>🐶</span>
+        </div>
+        <button class="start-btn" onclick="startGame()">🎮 התחילו לשחק!</button>
+    </div>
+
+    <!-- HUD -->
+    <div id="hud">
+        <div class="hud-item hud-score">⭐ ניקוד: <span id="score-display">0</span></div>
+        <div class="hud-item">🎯 תפיסות: <span id="catches-display">0</span></div>
+        <div class="hud-item hud-timer">⏱️ זמן: <span id="timer-display">60</span></div>
+        <button class="hud-back" onclick="goHome()">🏠 תפריט</button>
+    </div>
+
+    <!-- Game Canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Game Over Screen -->
+    <div id="game-over">
+        <div class="game-over-title">🎉 כל הכבוד! 🎉</div>
+        <div class="game-over-score">ניקוד סופי: <span id="final-score">0</span> ⭐</div>
+        <div class="game-over-catches" id="catches-summary"></div>
+        <div class="game-over-buttons">
+            <button class="game-over-btn btn-play-again" onclick="restartGame()">🔄 שחקו שוב!</button>
+            <a href="../index.html" class="game-over-btn btn-home" style="text-decoration:none;">🏠 תפריט ראשי</a>
+        </div>
+    </div>
+
+    <script>
+        // ============ GAME CONFIG ============
+        const GAME_DURATION = 60; // seconds
+        const SPAWN_INTERVAL = 1500; // ms between spawns
+        const MAX_ANIMALS = 8;
+
+        const ANIMAL_TYPES = [
+            { emoji: '🦄', name: 'חד קרן', points: 50, speed: 3.5, size: 50, rarity: 0.08 },
+            { emoji: '🐱', name: 'חתול', points: 10, speed: 2.0, size: 42, rarity: 0.18 },
+            { emoji: '🐰', name: 'ארנב', points: 15, speed: 2.8, size: 40, rarity: 0.15 },
+            { emoji: '🐭', name: "צ'ינצ'ילה", points: 20, speed: 3.0, size: 38, rarity: 0.12 },
+            { emoji: '🐼', name: 'דובי פנדה', points: 25, speed: 1.5, size: 55, rarity: 0.10 },
+            { emoji: '🐻', name: 'דובי פנדה קטן', points: 30, speed: 2.0, size: 45, rarity: 0.10 },
+            { emoji: '🐘', name: 'פיל קטן', points: 20, speed: 1.2, size: 52, rarity: 0.12 },
+            { emoji: '🐶', name: 'כלב', points: 10, speed: 2.2, size: 44, rarity: 0.15 },
+        ];
+
+        // ============ GAME STATE ============
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let gameRunning = false;
+        let score = 0;
+        let totalCatches = 0;
+        let timeLeft = GAME_DURATION;
+        let animals = [];
+        let particles = [];
+        let player = { x: 0, y: 0, targetX: 0, targetY: 0, size: 50 };
+        let catchCounts = {};
+        let spawnTimer = 0;
+        let gameTimer = null;
+        let grassBlades = [];
+        let clouds = [];
+        let flowers = [];
+
+        // Initialize catch counts
+        ANIMAL_TYPES.forEach(a => catchCounts[a.name] = 0);
+
+        // ============ CANVAS SETUP ============
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            generateScenery();
+        }
+
+        function generateScenery() {
+            // Generate grass blades
+            grassBlades = [];
+            for (let i = 0; i < canvas.width; i += 8) {
+                grassBlades.push({
+                    x: i,
+                    height: Math.random() * 30 + 15,
+                    sway: Math.random() * Math.PI * 2,
+                    speed: Math.random() * 0.02 + 0.01
+                });
+            }
+
+            // Generate clouds
+            clouds = [];
+            for (let i = 0; i < 5; i++) {
+                clouds.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height * 0.3 + 20,
+                    width: Math.random() * 120 + 80,
+                    speed: Math.random() * 0.3 + 0.1
+                });
+            }
+
+            // Generate flowers
+            flowers = [];
+            const flowerEmojis = ['🌸', '🌺', '🌻', '🌷', '🌼', '💐'];
+            for (let i = 0; i < 15; i++) {
+                flowers.push({
+                    x: Math.random() * canvas.width,
+                    y: canvas.height - Math.random() * 60 - 30,
+                    emoji: flowerEmojis[Math.floor(Math.random() * flowerEmojis.length)],
+                    size: Math.random() * 10 + 18
+                });
+            }
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // ============ INPUT HANDLING ============
+        function handleMove(x, y) {
+            player.targetX = x;
+            player.targetY = y;
+        }
+
+        canvas.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            handleMove(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: false });
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleMove(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: false });
+
+        // ============ ANIMAL SPAWNING ============
+        function spawnAnimal() {
+            if (animals.length >= MAX_ANIMALS) return;
+
+            // Pick random animal based on rarity
+            const roll = Math.random();
+            let cumulative = 0;
+            let type = ANIMAL_TYPES[0];
+            for (const t of ANIMAL_TYPES) {
+                cumulative += t.rarity;
+                if (roll <= cumulative) {
+                    type = t;
+                    break;
+                }
+            }
+
+            // Spawn from a random edge
+            const edge = Math.floor(Math.random() * 4);
+            let x, y;
+            const margin = 60;
+            switch (edge) {
+                case 0: x = -margin; y = Math.random() * canvas.height; break; // left
+                case 1: x = canvas.width + margin; y = Math.random() * canvas.height; break; // right
+                case 2: x = Math.random() * canvas.width; y = -margin; break; // top
+                case 3: x = Math.random() * canvas.width; y = canvas.height + margin; break; // bottom
+            }
+
+            // Direction toward a random point in the play area
+            const targetX = Math.random() * (canvas.width - 200) + 100;
+            const targetY = Math.random() * (canvas.height - 200) + 100;
+            const angle = Math.atan2(targetY - y, targetX - x);
+
+            animals.push({
+                type: type,
+                x: x,
+                y: y,
+                vx: Math.cos(angle) * type.speed,
+                vy: Math.sin(angle) * type.speed,
+                size: type.size,
+                wobble: Math.random() * Math.PI * 2,
+                wobbleSpeed: Math.random() * 0.05 + 0.03,
+                changeTimer: Math.random() * 120 + 60,
+                alive: true,
+                opacity: 1,
+                scale: 1
+            });
+        }
+
+        // ============ PARTICLES ============
+        function createCatchParticles(x, y, emoji) {
+            // Star particles
+            for (let i = 0; i < 12; i++) {
+                const angle = (Math.PI * 2 / 12) * i;
+                const speed = Math.random() * 4 + 2;
+                particles.push({
+                    x: x, y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    life: 1,
+                    decay: 0.02 + Math.random() * 0.02,
+                    size: Math.random() * 8 + 4,
+                    color: ['#ffe66d', '#ff6b6b', '#f093fb', '#4facfe', '#43e97b'][Math.floor(Math.random() * 5)],
+                    type: 'star'
+                });
+            }
+
+            // Emoji particle
+            particles.push({
+                x: x, y: y,
+                vx: 0, vy: -2,
+                life: 1,
+                decay: 0.015,
+                emoji: emoji,
+                size: 40,
+                type: 'emoji'
+            });
+        }
+
+        // ============ SCORE POPUP ============
+        function showScorePopup(x, y, points) {
+            const popup = document.createElement('div');
+            popup.className = 'catch-popup';
+            popup.textContent = `+${points}`;
+            popup.style.left = x + 'px';
+            popup.style.top = y + 'px';
+            document.body.appendChild(popup);
+            setTimeout(() => popup.remove(), 1000);
+        }
+
+        // ============ COLLISION DETECTION ============
+        function checkCatch() {
+            for (let i = animals.length - 1; i >= 0; i--) {
+                const a = animals[i];
+                if (!a.alive) continue;
+
+                const dx = player.x - a.x;
+                const dy = player.y - a.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const catchRadius = (player.size + a.size) / 2;
+
+                if (dist < catchRadius) {
+                    // Caught!
+                    a.alive = false;
+                    score += a.type.points;
+                    totalCatches++;
+                    catchCounts[a.type.name]++;
+
+                    // Effects
+                    createCatchParticles(a.x, a.y, a.type.emoji);
+                    showScorePopup(a.x, a.y, a.type.points);
+
+                    // Update HUD
+                    document.getElementById('score-display').textContent = score;
+                    document.getElementById('catches-display').textContent = totalCatches;
+
+                    // Remove animal
+                    animals.splice(i, 1);
+                }
+            }
+        }
+
+        // ============ UPDATE ============
+        function update() {
+            // Smooth player movement
+            const lerpSpeed = 0.12;
+            player.x += (player.targetX - player.x) * lerpSpeed;
+            player.y += (player.targetY - player.y) * lerpSpeed;
+
+            // Update animals
+            for (const a of animals) {
+                // Wobble movement
+                a.wobble += a.wobbleSpeed;
+                a.x += a.vx + Math.sin(a.wobble) * 0.5;
+                a.y += a.vy + Math.cos(a.wobble) * 0.3;
+
+                // Change direction randomly
+                a.changeTimer--;
+                if (a.changeTimer <= 0) {
+                    const angle = Math.random() * Math.PI * 2;
+                    a.vx = Math.cos(angle) * a.type.speed;
+                    a.vy = Math.sin(angle) * a.type.speed;
+                    a.changeTimer = Math.random() * 120 + 60;
+                }
+
+                // Bounce off walls
+                const m = 20;
+                if (a.x < m) { a.x = m; a.vx = Math.abs(a.vx); }
+                if (a.x > canvas.width - m) { a.x = canvas.width - m; a.vx = -Math.abs(a.vx); }
+                if (a.y < 60) { a.y = 60; a.vy = Math.abs(a.vy); }
+                if (a.y > canvas.height - m) { a.y = canvas.height - m; a.vy = -Math.abs(a.vy); }
+
+                // Run away from player (adds challenge!)
+                const dx = a.x - player.x;
+                const dy = a.y - player.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 120 && dist > 0) {
+                    const fleeStrength = (120 - dist) / 120 * 2;
+                    a.vx += (dx / dist) * fleeStrength * 0.1;
+                    a.vy += (dy / dist) * fleeStrength * 0.1;
+
+                    // Clamp speed
+                    const maxSpeed = a.type.speed * 2;
+                    const spd = Math.sqrt(a.vx * a.vx + a.vy * a.vy);
+                    if (spd > maxSpeed) {
+                        a.vx = (a.vx / spd) * maxSpeed;
+                        a.vy = (a.vy / spd) * maxSpeed;
+                    }
+                }
+            }
+
+            // Update particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life -= p.decay;
+                if (p.type === 'star') {
+                    p.vy += 0.1; // gravity
+                }
+                if (p.life <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+
+            // Update clouds
+            for (const c of clouds) {
+                c.x -= c.speed;
+                if (c.x + c.width < 0) {
+                    c.x = canvas.width + 50;
+                }
+            }
+
+            // Update grass sway
+            for (const g of grassBlades) {
+                g.sway += g.speed;
+            }
+
+            // Spawn animals
+            spawnTimer++;
+            if (spawnTimer >= SPAWN_INTERVAL / 16.67) {
+                spawnTimer = 0;
+                spawnAnimal();
+            }
+
+            checkCatch();
+        }
+
+        // ============ DRAW ============
+        function draw() {
+            // Sky gradient
+            const skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            skyGrad.addColorStop(0, '#87CEEB');
+            skyGrad.addColorStop(0.5, '#98D8C8');
+            skyGrad.addColorStop(0.8, '#7BC67E');
+            skyGrad.addColorStop(1, '#4A8C3F');
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Sun
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(canvas.width - 100, 80, 50, 0, Math.PI * 2);
+            ctx.fillStyle = '#FFE066';
+            ctx.shadowColor = '#FFE066';
+            ctx.shadowBlur = 40;
+            ctx.fill();
+            ctx.restore();
+
+            // Clouds
+            ctx.fillStyle = 'rgba(255,255,255,0.8)';
+            for (const c of clouds) {
+                ctx.beginPath();
+                ctx.arc(c.x, c.y, c.width * 0.25, 0, Math.PI * 2);
+                ctx.arc(c.x + c.width * 0.25, c.y - 10, c.width * 0.3, 0, Math.PI * 2);
+                ctx.arc(c.x + c.width * 0.55, c.y, c.width * 0.25, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Ground
+            ctx.fillStyle = '#5DBB63';
+            ctx.fillRect(0, canvas.height - 80, canvas.width, 80);
+
+            // Grass blades
+            ctx.strokeStyle = '#3A8C3F';
+            ctx.lineWidth = 2;
+            for (const g of grassBlades) {
+                ctx.beginPath();
+                const baseY = canvas.height - 80;
+                ctx.moveTo(g.x, baseY);
+                const swayX = Math.sin(g.sway) * 5;
+                ctx.quadraticCurveTo(g.x + swayX, baseY - g.height * 0.6, g.x + swayX * 1.5, baseY - g.height);
+                ctx.stroke();
+            }
+
+            // Flowers
+            for (const f of flowers) {
+                ctx.font = f.size + 'px serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(f.emoji, f.x, f.y);
+            }
+
+            // Draw animals
+            for (const a of animals) {
+                ctx.save();
+                ctx.globalAlpha = a.opacity;
+                ctx.font = a.size + 'px serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                // Shadow
+                ctx.shadowColor = 'rgba(0,0,0,0.2)';
+                ctx.shadowBlur = 8;
+                ctx.shadowOffsetY = 4;
+
+                // Flip based on direction
+                if (a.vx < 0) {
+                    ctx.scale(-1, 1);
+                    ctx.fillText(a.type.emoji, -a.x, a.y);
+                } else {
+                    ctx.fillText(a.type.emoji, a.x, a.y);
+                }
+
+                ctx.restore();
+
+                // Draw name + points below animal
+                ctx.save();
+                ctx.font = 'bold 13px Segoe UI, Tahoma, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillStyle = 'rgba(255,255,255,0.9)';
+                ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+                ctx.lineWidth = 3;
+                const label = `${a.type.name} (${a.type.points}⭐)`;
+                ctx.strokeText(label, a.x, a.y + a.size / 2 + 16);
+                ctx.fillText(label, a.x, a.y + a.size / 2 + 16);
+                ctx.restore();
+            }
+
+            // Draw particles
+            for (const p of particles) {
+                ctx.save();
+                ctx.globalAlpha = p.life;
+                if (p.type === 'star') {
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+                    ctx.fill();
+                } else if (p.type === 'emoji') {
+                    ctx.font = (p.size * p.life) + 'px serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(p.emoji, p.x, p.y);
+                }
+                ctx.restore();
+            }
+
+            // Draw player (cute girl)
+            ctx.save();
+            ctx.font = player.size + 'px serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(255,105,180,0.4)';
+            ctx.shadowBlur = 15;
+            ctx.fillText('👧', player.x, player.y);
+            ctx.restore();
+
+            // Draw glow circle around player
+            ctx.save();
+            const glowGrad = ctx.createRadialGradient(player.x, player.y, 10, player.x, player.y, 45);
+            glowGrad.addColorStop(0, 'rgba(255,182,193,0.3)');
+            glowGrad.addColorStop(1, 'rgba(255,182,193,0)');
+            ctx.fillStyle = glowGrad;
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, 45, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // ============ GAME LOOP ============
+        function gameLoop() {
+            if (!gameRunning) return;
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // ============ TIMER ============
+        function startTimer() {
+            gameTimer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer-display').textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        // ============ START / END / RESTART ============
+        function startGame() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('hud').classList.add('active');
+            document.body.style.cursor = 'none';
+
+            // Reset state
+            score = 0;
+            totalCatches = 0;
+            timeLeft = GAME_DURATION;
+            animals = [];
+            particles = [];
+            spawnTimer = 0;
+            ANIMAL_TYPES.forEach(a => catchCounts[a.name] = 0);
+
+            document.getElementById('score-display').textContent = '0';
+            document.getElementById('catches-display').textContent = '0';
+            document.getElementById('timer-display').textContent = GAME_DURATION;
+
+            // Place player at center
+            player.x = canvas.width / 2;
+            player.y = canvas.height / 2;
+            player.targetX = canvas.width / 2;
+            player.targetY = canvas.height / 2;
+
+            // Spawn initial animals
+            for (let i = 0; i < 4; i++) {
+                spawnAnimal();
+            }
+
+            gameRunning = true;
+            startTimer();
+            gameLoop();
+        }
+
+        function endGame() {
+            gameRunning = false;
+            clearInterval(gameTimer);
+            document.body.style.cursor = 'default';
+
+            document.getElementById('final-score').textContent = score;
+
+            // Build catches summary
+            let summaryHTML = '';
+            for (const type of ANIMAL_TYPES) {
+                const count = catchCounts[type.name];
+                if (count > 0) {
+                    summaryHTML += `<div>${type.emoji} ${type.name}: ${count} תפיסות (${count * type.points} נקודות)</div>`;
+                }
+            }
+            if (summaryHTML === '') {
+                summaryHTML = '<div>לא תפסתם אף חיה 😢 נסו שוב!</div>';
+            }
+            document.getElementById('catches-summary').innerHTML = summaryHTML;
+
+            document.getElementById('game-over').classList.add('active');
+        }
+
+        function restartGame() {
+            document.getElementById('game-over').classList.remove('active');
+            startGame();
+        }
+
+        function goHome() {
+            window.location.href = '../index.html';
+        }
+
+        // ============ INITIAL DRAW ============
+        // Draw background even before game starts
+        function drawBackground() {
+            draw();
+        }
+    </script>
+</body>
+</html>
