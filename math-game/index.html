@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>חשבון עם דרקון - לירי גיימס</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: #1a1a2e;
+        }
+
+        /* ===== START SCREEN ===== */
+        #start-screen {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #2d1b69 0%, #6b21a8 40%, #a855f7 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            transition: opacity 0.5s ease;
+        }
+
+        #start-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .start-dragon {
+            font-size: 100px;
+            animation: dragon-float 2s ease-in-out infinite;
+            filter: drop-shadow(0 10px 30px rgba(168,85,247,0.4));
+        }
+
+        @keyframes dragon-float {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+        }
+
+        .start-title {
+            font-size: 2.8em;
+            color: #fff;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            margin: 15px 0 8px;
+        }
+
+        .start-subtitle {
+            font-size: 1.15em;
+            color: rgba(255,255,255,0.85);
+            text-align: center;
+            padding: 0 20px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .start-btn {
+            padding: 16px 55px;
+            font-size: 1.5em;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(239,68,68,0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(239,68,68,0.6);
+        }
+
+        .back-link {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.1em;
+            background: rgba(0,0,0,0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+            transition: background 0.3s;
+        }
+
+        .back-link:hover { background: rgba(0,0,0,0.4); }
+
+        /* ===== GAME SCREEN ===== */
+        #game-screen {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #game-screen.active { display: block; }
+
+        /* Background */
+        .game-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        /* Canvas for background effects */
+        #bg-canvas {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        /* HUD */
+        .game-hud {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: rgba(30,15,60,0.85);
+            backdrop-filter: blur(10px);
+            z-index: 50;
+            direction: rtl;
+        }
+
+        .hud-item {
+            color: #fff;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .hud-score { color: #fbbf24; font-size: 1.4em; }
+        .hud-streak { color: #a78bfa; }
+        .hud-lives { font-size: 1.3em; }
+
+        .hud-back {
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9em;
+            background: rgba(255,255,255,0.15);
+            padding: 6px 16px;
+            border-radius: 15px;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+        }
+
+        /* Dragon area */
+        .dragon-area {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -65%);
+            text-align: center;
+            z-index: 10;
+        }
+
+        .dragon-character {
+            font-size: 120px;
+            display: inline-block;
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 10px 25px rgba(0,0,0,0.3));
+        }
+
+        .dragon-character.happy {
+            animation: dragon-happy 0.5s ease;
+        }
+
+        @keyframes dragon-happy {
+            0% { transform: scale(1) rotate(0); }
+            25% { transform: scale(1.2) rotate(-5deg); }
+            50% { transform: scale(1.15) rotate(5deg); }
+            75% { transform: scale(1.1) rotate(-3deg); }
+            100% { transform: scale(1) rotate(0); }
+        }
+
+        .dragon-character.sad {
+            animation: dragon-sad 0.6s ease;
+        }
+
+        @keyframes dragon-sad {
+            0% { transform: scale(1); }
+            30% { transform: scale(0.85) rotate(-5deg); }
+            60% { transform: scale(0.9) rotate(3deg); }
+            100% { transform: scale(1) rotate(0); }
+        }
+
+        .dragon-character.breathe-fire {
+            animation: dragon-fire 0.8s ease;
+        }
+
+        @keyframes dragon-fire {
+            0% { transform: scale(1); }
+            20% { transform: scale(1.3) rotate(-8deg); }
+            50% { transform: scale(1.25) rotate(0); }
+            100% { transform: scale(1) rotate(0); }
+        }
+
+        /* Dragon speech */
+        .dragon-speech {
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            padding: 10px 22px;
+            border-radius: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            position: relative;
+            min-width: 200px;
+            transition: opacity 0.3s;
+        }
+
+        .dragon-speech::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 12px solid rgba(255,255,255,0.95);
+        }
+
+        /* Question display */
+        .question-display {
+            font-size: 3em;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin: 15px 0 5px;
+            font-weight: bold;
+            direction: ltr;
+        }
+
+        /* Answer buttons */
+        .answers-area {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            z-index: 20;
+            max-width: 95vw;
+        }
+
+        .answer-btn {
+            width: 90px;
+            height: 90px;
+            border: none;
+            border-radius: 20px;
+            font-size: 2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            font-family: inherit;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .answer-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .answer-btn:hover::before { opacity: 1; }
+
+        .answer-btn:hover {
+            transform: scale(1.1) translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+        }
+
+        .answer-btn:active {
+            transform: scale(0.95);
+        }
+
+        .answer-btn.correct {
+            animation: correct-pop 0.5s ease;
+            background: #22c55e !important;
+        }
+
+        @keyframes correct-pop {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.25); }
+            100% { transform: scale(1); }
+        }
+
+        .answer-btn.wrong {
+            animation: wrong-shake 0.5s ease;
+            background: #ef4444 !important;
+        }
+
+        @keyframes wrong-shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-12px); }
+            40% { transform: translateX(12px); }
+            60% { transform: translateX(-8px); }
+            80% { transform: translateX(8px); }
+        }
+
+        /* Fire particles */
+        .fire-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 80;
+            animation: fire-rise 0.8s ease-out forwards;
+        }
+
+        @keyframes fire-rise {
+            0% { transform: scale(1) translateY(0); opacity: 1; }
+            100% { transform: scale(0.3) translateY(-80px); opacity: 0; }
+        }
+
+        /* Star burst on correct */
+        .star-burst {
+            position: fixed;
+            pointer-events: none;
+            z-index: 80;
+            animation: star-pop 0.7s ease-out forwards;
+        }
+
+        @keyframes star-pop {
+            0% { transform: scale(0) rotate(0); opacity: 1; }
+            50% { transform: scale(1.5) rotate(180deg); opacity: 0.8; }
+            100% { transform: scale(0.5) rotate(360deg); opacity: 0; }
+        }
+
+        /* Combo text */
+        .combo-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #fbbf24;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            z-index: 90;
+            pointer-events: none;
+            animation: combo-pop 1s ease-out forwards;
+        }
+
+        @keyframes combo-pop {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            30% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
+            70% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+        }
+
+        /* Score popup */
+        .score-popup {
+            position: fixed;
+            pointer-events: none;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #fbbf24;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            z-index: 80;
+            animation: score-rise 1s ease-out forwards;
+        }
+
+        @keyframes score-rise {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-60px) scale(1.3); opacity: 0; }
+        }
+
+        /* Progress bar for level */
+        .progress-container {
+            position: absolute;
+            bottom: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 280px;
+            z-index: 15;
+            text-align: center;
+        }
+
+        .progress-label {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 12px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f59e0b, #ef4444, #a855f7);
+            border-radius: 6px;
+            transition: width 0.4s ease;
+        }
+
+        /* Game Over */
+        #game-over {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 5, 35, 0.92);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+
+        #game-over.active { display: flex; }
+
+        .go-dragon { font-size: 100px; margin-bottom: 10px; }
+
+        .go-title {
+            font-size: 2.5em;
+            color: #fbbf24;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .go-score {
+            font-size: 1.8em;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .go-stats {
+            color: rgba(255,255,255,0.7);
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            text-align: center;
+            line-height: 1.8;
+        }
+
+        .go-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .go-btn {
+            padding: 14px 40px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-family: inherit;
+        }
+
+        .go-btn:hover { transform: scale(1.08); }
+
+        .go-btn-play {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            color: #fff;
+        }
+
+        .go-btn-home {
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            border: 2px solid rgba(255,255,255,0.3);
+            text-decoration: none;
+        }
+
+        /* Floating math symbols in background */
+        .math-symbol {
+            position: absolute;
+            color: rgba(255,255,255,0.06);
+            font-size: 40px;
+            font-weight: bold;
+            z-index: 0;
+            animation: symbol-drift 20s linear infinite;
+        }
+
+        @keyframes symbol-drift {
+            0% { transform: translateY(100vh) rotate(0deg); }
+            100% { transform: translateY(-100px) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== START SCREEN ===== -->
+    <div id="start-screen">
+        <a href="../index.html" class="back-link">🏠 חזרה לתפריט</a>
+        <div class="start-dragon">🐉</div>
+        <div class="start-title">חשבון עם דרקון! 🔥</div>
+        <div class="start-subtitle">
+            הדרקון החמוד צריך עזרה בחשבון!<br>
+            פתרו תרגילי חיבור וחיסור עד 30 ותעזרו לו לירות אש!
+        </div>
+        <button class="start-btn" onclick="startGame()">🔥 יאללה, נתחיל!</button>
+    </div>
+
+    <!-- ===== GAME SCREEN ===== -->
+    <div id="game-screen">
+        <!-- Background canvas for stars/particles -->
+        <canvas id="bg-canvas"></canvas>
+
+        <!-- Floating math symbols -->
+        <div id="math-symbols"></div>
+
+        <!-- HUD -->
+        <div class="game-hud">
+            <div class="hud-item hud-score">⭐ <span id="score">0</span></div>
+            <div class="hud-item hud-streak">🔥 רצף: <span id="streak">0</span></div>
+            <div class="hud-item hud-lives" id="lives">❤️❤️❤️</div>
+            <button class="hud-back" onclick="goHome()">🏠 תפריט</button>
+        </div>
+
+        <!-- Dragon + Question -->
+        <div class="dragon-area">
+            <div class="dragon-speech" id="speech">!בואו נפתור ביחד</div>
+            <div class="dragon-character" id="dragon">🐉</div>
+            <div class="question-display" id="question">? = 5 + 3</div>
+        </div>
+
+        <!-- Level progress -->
+        <div class="progress-container">
+            <div class="progress-label">רמה <span id="level-num">1</span> - עוד <span id="questions-left">5</span> תרגילים</div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Answer buttons -->
+        <div class="answers-area" id="answers"></div>
+    </div>
+
+    <!-- ===== GAME OVER ===== -->
+    <div id="game-over">
+        <div class="go-dragon">🐉</div>
+        <div class="go-title" id="go-title">🎉 כל הכבוד! 🎉</div>
+        <div class="go-score">ניקוד: <span id="final-score">0</span> ⭐</div>
+        <div class="go-stats" id="go-stats"></div>
+        <div class="go-buttons">
+            <button class="go-btn go-btn-play" onclick="restartGame()">🔥 שוב!</button>
+            <a href="../index.html" class="go-btn go-btn-home">🏠 תפריט</a>
+        </div>
+    </div>
+
+    <script>
+    // ============ CONFIG ============
+    const STARTING_LIVES = 3;
+    const QUESTIONS_PER_LEVEL = 5;
+    const MAX_NUMBER = 30;
+    const BUTTON_COLORS = [
+        'linear-gradient(135deg, #f59e0b, #d97706)',
+        'linear-gradient(135deg, #ef4444, #dc2626)',
+        'linear-gradient(135deg, #a855f7, #7c3aed)',
+        'linear-gradient(135deg, #3b82f6, #2563eb)',
+        'linear-gradient(135deg, #22c55e, #16a34a)',
+        'linear-gradient(135deg, #ec4899, #db2777)',
+    ];
+
+    const CORRECT_SPEECHES = [
+        '!מעולה! 🔥', '!נכון! אתם גאונים', '!יופי! הדרקון שמח', '!וואו, מושלם',
+        '!סופר! 🌟', '!בדיוק! כל הכבוד', '!אש! 🐉🔥', '!מדהים!',
+        '!ממש חכמים', '!תותחים! 💪'
+    ];
+
+    const WRONG_SPEECHES = [
+        '...אופס! ננסה שוב', 'לא נורא, ננסה עוד פעם!', '!כמעט! נסו שוב',
+        '...אוי, טעות קטנה', '!לא נכון, אבל בואו נמשיך'
+    ];
+
+    const LEVEL_SPEECHES = [
+        '!רמה חדשה! יאללה', '!עולים רמה! 🔥', '!אתם מתקדמים מהר',
+        '!הדרקון מתרגש! 🐉', '!בום! רמה חדשה'
+    ];
+
+    // ============ STATE ============
+    let score = 0;
+    let streak = 0;
+    let bestStreak = 0;
+    let lives = STARTING_LIVES;
+    let level = 1;
+    let questionsInLevel = 0;
+    let totalCorrect = 0;
+    let totalQuestions = 0;
+    let currentAnswer = 0;
+    let canAnswer = true;
+    let bgCanvas, bgCtx;
+    let bgStars = [];
+
+    // ============ BACKGROUND ============
+    function setupBackground() {
+        bgCanvas = document.getElementById('bg-canvas');
+        bgCtx = bgCanvas.getContext('2d');
+        bgCanvas.width = window.innerWidth;
+        bgCanvas.height = window.innerHeight;
+
+        // Create stars
+        bgStars = [];
+        for (let i = 0; i < 80; i++) {
+            bgStars.push({
+                x: Math.random() * bgCanvas.width,
+                y: Math.random() * bgCanvas.height,
+                r: Math.random() * 2 + 0.5,
+                twinkle: Math.random() * Math.PI * 2,
+                speed: Math.random() * 0.02 + 0.01
+            });
+        }
+
+        // Floating math symbols
+        const symbolsContainer = document.getElementById('math-symbols');
+        const symbols = ['+', '-', '=', '1', '2', '3', '5', '7', '9', '10', '15', '20', '+', '-'];
+        for (let i = 0; i < 18; i++) {
+            const sym = document.createElement('div');
+            sym.className = 'math-symbol';
+            sym.textContent = symbols[i % symbols.length];
+            sym.style.left = Math.random() * 100 + '%';
+            sym.style.fontSize = (Math.random() * 30 + 25) + 'px';
+            sym.style.animationDuration = (Math.random() * 20 + 15) + 's';
+            sym.style.animationDelay = -(Math.random() * 20) + 's';
+            symbolsContainer.appendChild(sym);
+        }
+
+        drawBg();
+    }
+
+    function drawBg() {
+        // Night sky gradient
+        const grad = bgCtx.createLinearGradient(0, 0, 0, bgCanvas.height);
+        grad.addColorStop(0, '#0f0524');
+        grad.addColorStop(0.5, '#1a0a3e');
+        grad.addColorStop(1, '#2d1560');
+        bgCtx.fillStyle = grad;
+        bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+        // Stars
+        for (const s of bgStars) {
+            s.twinkle += s.speed;
+            const alpha = 0.4 + Math.sin(s.twinkle) * 0.4;
+            bgCtx.beginPath();
+            bgCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            bgCtx.fillStyle = `rgba(255,255,255,${alpha})`;
+            bgCtx.fill();
+        }
+
+        // Moon
+        bgCtx.beginPath();
+        bgCtx.arc(bgCanvas.width - 80, 100, 35, 0, Math.PI * 2);
+        bgCtx.fillStyle = '#fef3c7';
+        bgCtx.shadowColor = '#fef3c7';
+        bgCtx.shadowBlur = 30;
+        bgCtx.fill();
+        bgCtx.shadowBlur = 0;
+
+        // Mountains silhouette
+        bgCtx.fillStyle = '#1a0a30';
+        bgCtx.beginPath();
+        bgCtx.moveTo(0, bgCanvas.height);
+        bgCtx.lineTo(0, bgCanvas.height * 0.7);
+        bgCtx.lineTo(bgCanvas.width * 0.15, bgCanvas.height * 0.55);
+        bgCtx.lineTo(bgCanvas.width * 0.3, bgCanvas.height * 0.65);
+        bgCtx.lineTo(bgCanvas.width * 0.45, bgCanvas.height * 0.5);
+        bgCtx.lineTo(bgCanvas.width * 0.6, bgCanvas.height * 0.6);
+        bgCtx.lineTo(bgCanvas.width * 0.75, bgCanvas.height * 0.48);
+        bgCtx.lineTo(bgCanvas.width * 0.9, bgCanvas.height * 0.58);
+        bgCtx.lineTo(bgCanvas.width, bgCanvas.height * 0.65);
+        bgCtx.lineTo(bgCanvas.width, bgCanvas.height);
+        bgCtx.fill();
+
+        // Foreground ground
+        bgCtx.fillStyle = '#120820';
+        bgCtx.fillRect(0, bgCanvas.height * 0.85, bgCanvas.width, bgCanvas.height * 0.15);
+
+        requestAnimationFrame(drawBg);
+    }
+
+    window.addEventListener('resize', () => {
+        if (bgCanvas) {
+            bgCanvas.width = window.innerWidth;
+            bgCanvas.height = window.innerHeight;
+        }
+    });
+
+    // ============ GENERATE QUESTION ============
+    function generateQuestion() {
+        const maxNum = Math.min(10 + level * 3, MAX_NUMBER);
+        let a, b, op, answer;
+
+        if (Math.random() < 0.5) {
+            // Addition
+            op = '+';
+            a = Math.floor(Math.random() * maxNum) + 1;
+            b = Math.floor(Math.random() * (MAX_NUMBER - a)) + 1;
+            answer = a + b;
+        } else {
+            // Subtraction - ensure non-negative result
+            op = '-';
+            a = Math.floor(Math.random() * maxNum) + 2;
+            b = Math.floor(Math.random() * a) + 1;
+            answer = a - b;
+        }
+
+        // For first levels, keep numbers smaller
+        if (level <= 2) {
+            if (op === '+') {
+                a = Math.floor(Math.random() * 10) + 1;
+                b = Math.floor(Math.random() * 10) + 1;
+                answer = a + b;
+            } else {
+                a = Math.floor(Math.random() * 15) + 5;
+                b = Math.floor(Math.random() * a) + 1;
+                answer = a - b;
+            }
+        }
+
+        currentAnswer = answer;
+
+        // Display question (LTR for math)
+        document.getElementById('question').textContent = `${a} ${op} ${b} = ?`;
+
+        // Generate answer choices
+        generateAnswerButtons(answer);
+    }
+
+    function generateAnswerButtons(correctAnswer) {
+        const answersDiv = document.getElementById('answers');
+        answersDiv.innerHTML = '';
+
+        // Generate wrong answers
+        const choices = new Set([correctAnswer]);
+        while (choices.size < 4) {
+            let wrong;
+            const offset = Math.floor(Math.random() * 8) + 1;
+            if (Math.random() < 0.5) {
+                wrong = correctAnswer + offset;
+            } else {
+                wrong = correctAnswer - offset;
+            }
+            if (wrong >= 0 && wrong <= MAX_NUMBER + 10 && wrong !== correctAnswer) {
+                choices.add(wrong);
+            }
+        }
+
+        // Shuffle
+        const shuffled = [...choices].sort(() => Math.random() - 0.5);
+
+        shuffled.forEach((val, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'answer-btn';
+            btn.textContent = val;
+            btn.style.background = BUTTON_COLORS[i % BUTTON_COLORS.length];
+            btn.addEventListener('click', () => handleAnswer(val, btn));
+            answersDiv.appendChild(btn);
+        });
+    }
+
+    // ============ HANDLE ANSWER ============
+    function handleAnswer(chosen, btn) {
+        if (!canAnswer) return;
+        canAnswer = false;
+        totalQuestions++;
+
+        if (chosen === currentAnswer) {
+            // CORRECT!
+            totalCorrect++;
+            streak++;
+            if (streak > bestStreak) bestStreak = streak;
+
+            const points = 10 + streak * 2;
+            score += points;
+
+            btn.classList.add('correct');
+            document.getElementById('dragon').classList.add('happy');
+            setSpeech(CORRECT_SPEECHES[Math.floor(Math.random() * CORRECT_SPEECHES.length)]);
+
+            // Fire effect
+            dragonBreatheFire();
+
+            // Star burst
+            createStarBurst(btn);
+
+            // Score popup
+            showScorePopup(btn, `+${points}`);
+
+            // Combo announcement
+            if (streak > 0 && streak % 3 === 0) {
+                showCombo(`🔥 רצף ${streak}! 🔥`);
+            }
+            if (streak === 5) showCombo('🐉 דרקון אש! 🐉');
+            if (streak === 10) showCombo('👑 מלך החשבון! 👑');
+
+            // Level progress
+            questionsInLevel++;
+            updateProgress();
+
+            if (questionsInLevel >= QUESTIONS_PER_LEVEL) {
+                questionsInLevel = 0;
+                level++;
+                document.getElementById('level-num').textContent = level;
+                setTimeout(() => {
+                    setSpeech(LEVEL_SPEECHES[Math.floor(Math.random() * LEVEL_SPEECHES.length)]);
+                    document.getElementById('dragon').classList.add('breathe-fire');
+                    setTimeout(() => document.getElementById('dragon').classList.remove('breathe-fire'), 800);
+                }, 600);
+            }
+
+            updateHUD();
+
+            setTimeout(() => {
+                btn.classList.remove('correct');
+                document.getElementById('dragon').classList.remove('happy');
+                canAnswer = true;
+                generateQuestion();
+            }, 1000);
+
+        } else {
+            // WRONG
+            streak = 0;
+            lives--;
+
+            btn.classList.add('wrong');
+            document.getElementById('dragon').classList.add('sad');
+            setSpeech(WRONG_SPEECHES[Math.floor(Math.random() * WRONG_SPEECHES.length)]);
+
+            // Show correct answer
+            setTimeout(() => {
+                const buttons = document.querySelectorAll('.answer-btn');
+                buttons.forEach(b => {
+                    if (parseInt(b.textContent) === currentAnswer) {
+                        b.style.background = 'linear-gradient(135deg, #22c55e, #16a34a)';
+                        b.style.transform = 'scale(1.15)';
+                        b.style.boxShadow = '0 0 20px rgba(34,197,94,0.5)';
+                    }
+                });
+            }, 400);
+
+            updateHUD();
+
+            if (lives <= 0) {
+                setTimeout(endGame, 1500);
+            } else {
+                setTimeout(() => {
+                    btn.classList.remove('wrong');
+                    document.getElementById('dragon').classList.remove('sad');
+                    canAnswer = true;
+                    generateQuestion();
+                }, 1800);
+            }
+        }
+    }
+
+    // ============ EFFECTS ============
+    function dragonBreatheFire() {
+        const dragon = document.getElementById('dragon');
+        const rect = dragon.getBoundingClientRect();
+        const fires = ['🔥', '💥', '✨', '⚡'];
+
+        for (let i = 0; i < 8; i++) {
+            const fire = document.createElement('div');
+            fire.className = 'fire-particle';
+            fire.textContent = fires[Math.floor(Math.random() * fires.length)];
+            fire.style.fontSize = (Math.random() * 20 + 15) + 'px';
+            fire.style.left = (rect.left + rect.width / 2 + (Math.random() - 0.5) * 80) + 'px';
+            fire.style.top = (rect.top + (Math.random() - 0.5) * 40) + 'px';
+            document.body.appendChild(fire);
+            setTimeout(() => fire.remove(), 800);
+        }
+    }
+
+    function createStarBurst(btn) {
+        const rect = btn.getBoundingClientRect();
+        const stars = ['⭐', '🌟', '✨', '💫'];
+        for (let i = 0; i < 6; i++) {
+            const star = document.createElement('div');
+            star.className = 'star-burst';
+            star.textContent = stars[Math.floor(Math.random() * stars.length)];
+            star.style.fontSize = (Math.random() * 15 + 15) + 'px';
+            star.style.left = (rect.left + rect.width / 2 + (Math.random() - 0.5) * 100) + 'px';
+            star.style.top = (rect.top + (Math.random() - 0.5) * 80) + 'px';
+            document.body.appendChild(star);
+            setTimeout(() => star.remove(), 700);
+        }
+    }
+
+    function showScorePopup(btn, text) {
+        const rect = btn.getBoundingClientRect();
+        const popup = document.createElement('div');
+        popup.className = 'score-popup';
+        popup.textContent = text;
+        popup.style.left = (rect.left + rect.width / 2) + 'px';
+        popup.style.top = (rect.top - 10) + 'px';
+        document.body.appendChild(popup);
+        setTimeout(() => popup.remove(), 1000);
+    }
+
+    function showCombo(text) {
+        const combo = document.createElement('div');
+        combo.className = 'combo-text';
+        combo.textContent = text;
+        document.body.appendChild(combo);
+        setTimeout(() => combo.remove(), 1200);
+    }
+
+    function setSpeech(text) {
+        document.getElementById('speech').textContent = text;
+    }
+
+    // ============ HUD ============
+    function updateHUD() {
+        document.getElementById('score').textContent = score;
+        document.getElementById('streak').textContent = streak;
+
+        let heartsHTML = '';
+        for (let i = 0; i < STARTING_LIVES; i++) {
+            heartsHTML += i < lives ? '❤️' : '🖤';
+        }
+        document.getElementById('lives').innerHTML = heartsHTML;
+    }
+
+    function updateProgress() {
+        const pct = (questionsInLevel / QUESTIONS_PER_LEVEL) * 100;
+        document.getElementById('progress-fill').style.width = pct + '%';
+        document.getElementById('questions-left').textContent = QUESTIONS_PER_LEVEL - questionsInLevel;
+    }
+
+    // ============ START / END / RESTART ============
+    function startGame() {
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('game-screen').classList.add('active');
+
+        score = 0;
+        streak = 0;
+        bestStreak = 0;
+        lives = STARTING_LIVES;
+        level = 1;
+        questionsInLevel = 0;
+        totalCorrect = 0;
+        totalQuestions = 0;
+        canAnswer = true;
+
+        updateHUD();
+        updateProgress();
+        document.getElementById('level-num').textContent = 1;
+
+        setupBackground();
+        setSpeech('!בואו נפתור ביחד');
+        generateQuestion();
+    }
+
+    function endGame() {
+        document.getElementById('game-over').classList.add('active');
+        document.getElementById('final-score').textContent = score;
+
+        const accuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
+
+        let title = '🎉 כל הכבוד! 🎉';
+        if (accuracy >= 90) title = '👑 גאון מתמטיקה! 👑';
+        else if (accuracy >= 70) title = '🌟 יופי של משחק! 🌟';
+        else if (accuracy < 50) title = '💪 ננסה שוב! 💪';
+
+        document.getElementById('go-title').textContent = title;
+
+        document.getElementById('go-stats').innerHTML = `
+            <div>📊 תרגילים: ${totalQuestions}</div>
+            <div>✅ תשובות נכונות: ${totalCorrect}</div>
+            <div>🎯 דיוק: ${accuracy}%</div>
+            <div>🔥 רצף הכי גבוה: ${bestStreak}</div>
+            <div>⭐ רמה שהגעתם אליה: ${level}</div>
+        `;
+    }
+
+    function restartGame() {
+        document.getElementById('game-over').classList.remove('active');
+        score = 0;
+        streak = 0;
+        bestStreak = 0;
+        lives = STARTING_LIVES;
+        level = 1;
+        questionsInLevel = 0;
+        totalCorrect = 0;
+        totalQuestions = 0;
+        canAnswer = true;
+
+        updateHUD();
+        updateProgress();
+        document.getElementById('level-num').textContent = 1;
+        setSpeech('!בואו נפתור ביחד');
+        generateQuestion();
+    }
+
+    function goHome() {
+        window.location.href = '../index.html';
+    }
+    </script>
+</body>
+</html>
