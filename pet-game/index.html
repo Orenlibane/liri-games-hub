@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ליטוף חיות - לירי גיימס</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: #fef6e4;
+        }
+
+        /* ========= START SCREEN ========= */
+        #start-screen {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ff9a9e 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            transition: opacity 0.5s ease;
+        }
+
+        #start-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .start-title {
+            font-size: 3em;
+            color: #fff;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .start-subtitle {
+            font-size: 1.2em;
+            color: rgba(255,255,255,0.95);
+            margin-bottom: 30px;
+            text-align: center;
+            padding: 0 20px;
+            line-height: 1.6;
+        }
+
+        .animals-preview {
+            font-size: 3em;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .animals-preview span {
+            animation: wiggle 2s ease-in-out infinite;
+            display: inline-block;
+        }
+        .animals-preview span:nth-child(2) { animation-delay: 0.15s; }
+        .animals-preview span:nth-child(3) { animation-delay: 0.3s; }
+        .animals-preview span:nth-child(4) { animation-delay: 0.45s; }
+        .animals-preview span:nth-child(5) { animation-delay: 0.6s; }
+        .animals-preview span:nth-child(6) { animation-delay: 0.75s; }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-3deg); }
+            50% { transform: rotate(3deg); }
+        }
+
+        .start-btn {
+            padding: 18px 60px;
+            font-size: 1.5em;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(253, 160, 133, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(253, 160, 133, 0.6);
+        }
+
+        .back-link {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.1em;
+            background: rgba(0,0,0,0.15);
+            padding: 8px 20px;
+            border-radius: 20px;
+            transition: background 0.3s;
+        }
+
+        .back-link:hover {
+            background: rgba(0,0,0,0.3);
+        }
+
+        /* ========= GAME SCREEN ========= */
+        #game-screen {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        #game-screen.active {
+            display: block;
+        }
+
+        /* HUD */
+        #hud {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(12px);
+            z-index: 50;
+            direction: rtl;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        }
+
+        .hud-item {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .hud-love {
+            color: #e74c8b;
+            font-size: 1.4em;
+        }
+
+        .hud-level {
+            color: #f6a623;
+        }
+
+        .hud-back {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9em;
+            background: rgba(0,0,0,0.06);
+            padding: 6px 16px;
+            border-radius: 15px;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            font-weight: bold;
+        }
+
+        .hud-back:hover {
+            background: rgba(0,0,0,0.12);
+        }
+
+        /* Background scene */
+        #scene {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animal card */
+        .animal-card {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .animal-card:active {
+            transform: scale(0.95);
+        }
+
+        .animal-emoji {
+            font-size: 80px;
+            transition: transform 0.2s ease;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.15));
+        }
+
+        .animal-card.petting .animal-emoji {
+            animation: pet-bounce 0.3s ease infinite;
+        }
+
+        @keyframes pet-bounce {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.08) rotate(-3deg); }
+            75% { transform: scale(1.08) rotate(3deg); }
+        }
+
+        .animal-name {
+            font-size: 1em;
+            font-weight: bold;
+            color: #555;
+            margin-top: 4px;
+            background: rgba(255,255,255,0.85);
+            padding: 2px 12px;
+            border-radius: 10px;
+        }
+
+        /* Happiness bar */
+        .happiness-bar-container {
+            width: 90px;
+            height: 10px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 5px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+
+        .happiness-bar {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.3s ease, background 0.3s ease;
+        }
+
+        /* Mood indicator */
+        .mood {
+            font-size: 1.4em;
+            margin-top: 2px;
+            transition: opacity 0.3s;
+        }
+
+        /* Floating hearts */
+        .float-heart {
+            position: fixed;
+            pointer-events: none;
+            font-size: 1.8em;
+            z-index: 80;
+            animation: heart-rise 1.2s ease-out forwards;
+        }
+
+        @keyframes heart-rise {
+            0% { transform: translateY(0) scale(0.5) rotate(0deg); opacity: 1; }
+            50% { transform: translateY(-50px) scale(1.2) rotate(15deg); opacity: 0.8; }
+            100% { transform: translateY(-120px) scale(0.8) rotate(-10deg); opacity: 0; }
+        }
+
+        /* Sparkle effect */
+        .sparkle {
+            position: fixed;
+            pointer-events: none;
+            font-size: 1.2em;
+            z-index: 80;
+            animation: sparkle-pop 0.8s ease-out forwards;
+        }
+
+        @keyframes sparkle-pop {
+            0% { transform: scale(0); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.8; }
+            100% { transform: scale(0); opacity: 0; }
+        }
+
+        /* Level up popup */
+        .level-up-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #f6d365, #fda085);
+            color: #fff;
+            font-size: 2em;
+            font-weight: bold;
+            padding: 20px 50px;
+            border-radius: 20px;
+            z-index: 300;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: level-pop 1.5s ease forwards;
+            pointer-events: none;
+            text-align: center;
+        }
+
+        @keyframes level-pop {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-10deg); }
+            20% { transform: translate(-50%, -50%) scale(1.2) rotate(3deg); }
+            40% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+            80% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(0.8) rotate(0deg); opacity: 0; }
+        }
+
+        /* Animal select panel */
+        #animal-select {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 10px;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(12px);
+            z-index: 50;
+            box-shadow: 0 -2px 15px rgba(0,0,0,0.08);
+            flex-wrap: wrap;
+        }
+
+        .select-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 12px;
+            border: 3px solid transparent;
+            border-radius: 16px;
+            background: rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .select-btn:hover {
+            background: rgba(0,0,0,0.08);
+        }
+
+        .select-btn.locked {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .select-btn .sel-emoji {
+            font-size: 2em;
+        }
+
+        .select-btn .sel-name {
+            font-size: 0.7em;
+            color: #777;
+            margin-top: 2px;
+        }
+
+        .select-btn .sel-lock {
+            font-size: 0.65em;
+            color: #aaa;
+        }
+
+        /* Grass & scenery */
+        .grass-patch {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(to top, #7BC67E, #5DBB63, transparent);
+            z-index: 0;
+        }
+
+        .tree {
+            position: absolute;
+            font-size: 60px;
+            z-index: 1;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.1));
+        }
+
+        .cloud {
+            position: absolute;
+            font-size: 40px;
+            opacity: 0.6;
+            z-index: 0;
+            animation: cloud-drift linear infinite;
+        }
+
+        @keyframes cloud-drift {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-110vw); }
+        }
+
+        .scenery-flower {
+            position: absolute;
+            z-index: 1;
+        }
+
+        /* Tooltip / instruction */
+        .instruction {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,255,255,0.9);
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-size: 1.1em;
+            color: #666;
+            z-index: 60;
+            animation: fade-in-out 4s ease forwards;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        @keyframes fade-in-out {
+            0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+            15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            75% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== START SCREEN ===== -->
+    <div id="start-screen">
+        <a href="../index.html" class="back-link">🏠 חזרה לתפריט</a>
+        <div class="start-title">ליטוף חיות 🐾💕</div>
+        <div class="start-subtitle">
+            לטפו בחיות חמודות, תעשו אותן שמחות ותאספו אהבה!<br>
+            ככל שתלטפו יותר, תפתחו חיות חדשות!
+        </div>
+        <div class="animals-preview">
+            <span>🐱</span>
+            <span>🐶</span>
+            <span>🐰</span>
+            <span>🐹</span>
+            <span>🦄</span>
+            <span>🐼</span>
+        </div>
+        <button class="start-btn" onclick="startGame()">💕 בואו נלטף!</button>
+    </div>
+
+    <!-- ===== GAME SCREEN ===== -->
+    <div id="game-screen">
+        <!-- HUD -->
+        <div id="hud">
+            <div class="hud-item hud-love">💕 אהבה: <span id="love-display">0</span></div>
+            <div class="hud-item hud-level">⭐ רמה: <span id="level-display">1</span></div>
+            <div class="hud-item">🐾 חיות: <span id="animal-count-display">1</span></div>
+            <button class="hud-back" onclick="goHome()">🏠 תפריט</button>
+        </div>
+
+        <!-- Scene -->
+        <div id="scene"></div>
+
+        <!-- Animal select bar -->
+        <div id="animal-select"></div>
+    </div>
+
+    <script>
+        // ============ ANIMAL DATA ============
+        const ANIMALS = [
+            { id: 'cat',        emoji: '🐱', name: 'חתול',        unlockLevel: 1,  petRate: 5,  sounds: ['מררר...', 'פררר...', 'מיאו! 😻', 'אוהב אותך!'] },
+            { id: 'dog',        emoji: '🐶', name: 'כלב',         unlockLevel: 1,  petRate: 6,  sounds: ['הב הב! 🐕', 'ווף!', 'אוהב ליטופים!', 'עוד עוד!'] },
+            { id: 'rabbit',     emoji: '🐰', name: 'ארנב',        unlockLevel: 2,  petRate: 7,  sounds: ['קפיץ קפיץ!', '🥕 יאמי!', 'רך רך!', 'עוד בבקשה!'] },
+            { id: 'hamster',    emoji: '🐹', name: 'אוגר',        unlockLevel: 3,  petRate: 8,  sounds: ['ציק ציק!', 'קקי!', 'חמוד!', 'שמח! 😊'] },
+            { id: 'chinchilla', emoji: '🐭', name: "צ'ינצ'ילה",   unlockLevel: 4,  petRate: 9,  sounds: ['רך כמו עננים!', 'ממממ!', 'פלאפי!', 'עוד!'] },
+            { id: 'panda',      emoji: '🐼', name: 'פנדה',        unlockLevel: 5,  petRate: 10, sounds: ['אוכל במבוק!', 'שמנמן!', 'חיבוק!', 'אהבה! 🎋'] },
+            { id: 'elephant',   emoji: '🐘', name: 'פיל קטן',     unlockLevel: 6,  petRate: 12, sounds: ['טוט טוט!', 'גדול ורך!', 'פיליפי!', 'עוד ליטוף!'] },
+            { id: 'unicorn',    emoji: '🦄', name: 'חד קרן',      unlockLevel: 8,  petRate: 15, sounds: ['קסום!', '✨ נוצץ!', 'קשת בענן!', 'אהבה קסומה! 💫'] },
+            { id: 'bear',       emoji: '🐻', name: 'דובי',        unlockLevel: 10, petRate: 18, sounds: ['גררר חמוד!', 'חיבוק דוב!', 'דבש! 🍯', 'רך ופלאפי!'] },
+            { id: 'penguin',    emoji: '🐧', name: 'פינגווין',     unlockLevel: 12, petRate: 20, sounds: ['קר לי!', 'דגים!', 'מחליק!', 'חמוד בטירוף! 🧊'] },
+        ];
+
+        // ============ GAME STATE ============
+        let love = 0;
+        let level = 1;
+        let activeAnimals = []; // animals currently on screen
+        let petTimers = {};     // track petting per animal
+        let gameStarted = false;
+
+        // ============ HELPERS ============
+        function getUnlockedAnimals() {
+            return ANIMALS.filter(a => a.unlockLevel <= level);
+        }
+
+        function getLevelThreshold(lvl) {
+            return Math.floor(50 * Math.pow(1.6, lvl - 1));
+        }
+
+        function updateHUD() {
+            document.getElementById('love-display').textContent = love;
+            document.getElementById('level-display').textContent = level;
+            document.getElementById('animal-count-display').textContent = getUnlockedAnimals().length;
+        }
+
+        // ============ SCENERY ============
+        function buildScenery() {
+            const scene = document.getElementById('scene');
+
+            // Sky gradient
+            scene.style.background = 'linear-gradient(180deg, #87CEEB 0%, #B0E0E6 40%, #98D8C8 70%, #7BC67E 100%)';
+
+            // Grass
+            const grass = document.createElement('div');
+            grass.className = 'grass-patch';
+            scene.appendChild(grass);
+
+            // Sun
+            const sun = document.createElement('div');
+            sun.textContent = '☀️';
+            sun.style.cssText = 'position:absolute;top:30px;left:60px;font-size:60px;z-index:0;filter:drop-shadow(0 0 20px #FFE066);';
+            scene.appendChild(sun);
+
+            // Trees
+            const trees = ['🌳', '🌲', '🌴'];
+            const treePositions = [
+                { left: '5%', bottom: '80px' },
+                { left: '85%', bottom: '90px' },
+                { left: '45%', bottom: '75px' },
+                { right: '15%', bottom: '85px' },
+            ];
+            treePositions.forEach((pos, i) => {
+                const tree = document.createElement('div');
+                tree.className = 'tree';
+                tree.textContent = trees[i % trees.length];
+                Object.assign(tree.style, pos);
+                scene.appendChild(tree);
+            });
+
+            // Clouds
+            for (let i = 0; i < 4; i++) {
+                const cloud = document.createElement('div');
+                cloud.className = 'cloud';
+                cloud.textContent = '☁️';
+                cloud.style.top = (Math.random() * 25 + 5) + '%';
+                cloud.style.left = (Math.random() * 100) + '%';
+                cloud.style.fontSize = (Math.random() * 30 + 30) + 'px';
+                cloud.style.animationDuration = (Math.random() * 40 + 30) + 's';
+                cloud.style.animationDelay = -(Math.random() * 40) + 's';
+                scene.appendChild(cloud);
+            }
+
+            // Flowers on the ground
+            const flowerTypes = ['🌸', '🌺', '🌻', '🌷', '🌼', '💮'];
+            for (let i = 0; i < 20; i++) {
+                const flower = document.createElement('div');
+                flower.className = 'scenery-flower';
+                flower.textContent = flowerTypes[Math.floor(Math.random() * flowerTypes.length)];
+                flower.style.fontSize = (Math.random() * 14 + 14) + 'px';
+                flower.style.left = (Math.random() * 95) + '%';
+                flower.style.bottom = (Math.random() * 50 + 10) + 'px';
+                scene.appendChild(flower);
+            }
+        }
+
+        // ============ SPAWN ANIMAL ON SCREEN ============
+        function spawnAnimalOnScreen(animalData) {
+            // Remove existing if present
+            removeAnimalFromScreen(animalData.id);
+
+            const scene = document.getElementById('scene');
+            const card = document.createElement('div');
+            card.className = 'animal-card';
+            card.id = 'animal-' + animalData.id;
+            card.dataset.animalId = animalData.id;
+
+            // Position in play area (avoid HUD and bottom bar)
+            const x = Math.random() * (window.innerWidth - 160) + 40;
+            const y = Math.random() * (window.innerHeight - 340) + 100;
+            card.style.left = x + 'px';
+            card.style.top = y + 'px';
+
+            card.innerHTML = `
+                <div class="animal-emoji">${animalData.emoji}</div>
+                <div class="animal-name">${animalData.name}</div>
+                <div class="happiness-bar-container">
+                    <div class="happiness-bar" style="width:0%;background:#ccc;"></div>
+                </div>
+                <div class="mood">😐</div>
+            `;
+
+            // Petting interaction
+            let isPetting = false;
+            let happiness = 0;
+            let petInterval = null;
+            let idleTimer = null;
+
+            function startPet(e) {
+                e.preventDefault();
+                if (isPetting) return;
+                isPetting = true;
+                card.classList.add('petting');
+                clearInterval(idleTimer);
+
+                petInterval = setInterval(() => {
+                    happiness = Math.min(100, happiness + animalData.petRate);
+                    love += Math.ceil(animalData.petRate / 2);
+                    updateHappinessBar(card, happiness);
+                    updateHUD();
+                    checkLevelUp();
+
+                    // Floating hearts
+                    createFloatingHeart(card);
+
+                    // Random speech
+                    if (Math.random() < 0.15) {
+                        showSpeechBubble(card, animalData.sounds[Math.floor(Math.random() * animalData.sounds.length)]);
+                    }
+
+                    // Sparkles at high happiness
+                    if (happiness > 70 && Math.random() < 0.3) {
+                        createSparkle(card);
+                    }
+                }, 200);
+            }
+
+            function stopPet() {
+                if (!isPetting) return;
+                isPetting = false;
+                card.classList.remove('petting');
+                clearInterval(petInterval);
+
+                // Start idle decay
+                idleTimer = setInterval(() => {
+                    happiness = Math.max(0, happiness - 1);
+                    updateHappinessBar(card, happiness);
+                }, 500);
+            }
+
+            card.addEventListener('mousedown', startPet);
+            card.addEventListener('mouseup', stopPet);
+            card.addEventListener('mouseleave', stopPet);
+            card.addEventListener('touchstart', startPet, { passive: false });
+            card.addEventListener('touchend', stopPet);
+            card.addEventListener('touchcancel', stopPet);
+
+            // Drag to move
+            let dragOffsetX = 0, dragOffsetY = 0, isDragging = false;
+
+            function onDragStart(clientX, clientY) {
+                const rect = card.getBoundingClientRect();
+                dragOffsetX = clientX - rect.left;
+                dragOffsetY = clientY - rect.top;
+                isDragging = true;
+            }
+
+            function onDragMove(clientX, clientY) {
+                if (!isDragging) return;
+                let newX = clientX - dragOffsetX;
+                let newY = clientY - dragOffsetY;
+                // Clamp
+                newX = Math.max(0, Math.min(window.innerWidth - 100, newX));
+                newY = Math.max(60, Math.min(window.innerHeight - 200, newY));
+                card.style.left = newX + 'px';
+                card.style.top = newY + 'px';
+            }
+
+            function onDragEnd() {
+                isDragging = false;
+            }
+
+            card.addEventListener('mousedown', (e) => onDragStart(e.clientX, e.clientY));
+            window.addEventListener('mousemove', (e) => onDragMove(e.clientX, e.clientY));
+            window.addEventListener('mouseup', onDragEnd);
+            card.addEventListener('touchstart', (e) => {
+                onDragStart(e.touches[0].clientX, e.touches[0].clientY);
+            }, { passive: false });
+            window.addEventListener('touchmove', (e) => {
+                if (isDragging) onDragMove(e.touches[0].clientX, e.touches[0].clientY);
+            }, { passive: false });
+            window.addEventListener('touchend', onDragEnd);
+
+            // Idle behavior: animal wanders slowly
+            function wander() {
+                if (isDragging || isPetting) return;
+                const currentX = parseFloat(card.style.left);
+                const currentY = parseFloat(card.style.top);
+                const newX = Math.max(20, Math.min(window.innerWidth - 120, currentX + (Math.random() - 0.5) * 60));
+                const newY = Math.max(80, Math.min(window.innerHeight - 220, currentY + (Math.random() - 0.5) * 40));
+                card.style.transition = 'left 2s ease, top 2s ease';
+                card.style.left = newX + 'px';
+                card.style.top = newY + 'px';
+                setTimeout(() => {
+                    card.style.transition = 'transform 0.1s ease';
+                }, 2100);
+            }
+
+            setInterval(wander, 4000 + Math.random() * 3000);
+
+            // Start idle decay
+            idleTimer = setInterval(() => {
+                happiness = Math.max(0, happiness - 1);
+                updateHappinessBar(card, happiness);
+            }, 500);
+
+            scene.appendChild(card);
+            activeAnimals.push({ data: animalData, element: card });
+        }
+
+        function removeAnimalFromScreen(animalId) {
+            const existing = document.getElementById('animal-' + animalId);
+            if (existing) existing.remove();
+            activeAnimals = activeAnimals.filter(a => a.data.id !== animalId);
+        }
+
+        // ============ HAPPINESS BAR ============
+        function updateHappinessBar(card, happiness) {
+            const bar = card.querySelector('.happiness-bar');
+            const mood = card.querySelector('.mood');
+            bar.style.width = happiness + '%';
+
+            if (happiness < 20) {
+                bar.style.background = '#ccc';
+                mood.textContent = '😐';
+            } else if (happiness < 40) {
+                bar.style.background = '#f6d365';
+                mood.textContent = '🙂';
+            } else if (happiness < 60) {
+                bar.style.background = '#fda085';
+                mood.textContent = '😊';
+            } else if (happiness < 80) {
+                bar.style.background = '#ff6b9d';
+                mood.textContent = '😍';
+            } else {
+                bar.style.background = 'linear-gradient(90deg, #f093fb, #f5576c)';
+                mood.textContent = '🥰';
+            }
+        }
+
+        // ============ FLOATING HEARTS ============
+        function createFloatingHeart(card) {
+            const rect = card.getBoundingClientRect();
+            const heart = document.createElement('div');
+            heart.className = 'float-heart';
+            const hearts = ['❤️', '💕', '💖', '💗', '💝', '🩷', '🧡'];
+            heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+            heart.style.left = (rect.left + rect.width / 2 + (Math.random() - 0.5) * 50) + 'px';
+            heart.style.top = (rect.top + 10) + 'px';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 1200);
+        }
+
+        // ============ SPARKLES ============
+        function createSparkle(card) {
+            const rect = card.getBoundingClientRect();
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            const sparkles = ['✨', '⭐', '🌟', '💫'];
+            sparkle.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
+            sparkle.style.left = (rect.left + Math.random() * rect.width) + 'px';
+            sparkle.style.top = (rect.top + Math.random() * rect.height * 0.5) + 'px';
+            document.body.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 800);
+        }
+
+        // ============ SPEECH BUBBLE ============
+        function showSpeechBubble(card, text) {
+            // Remove existing bubble if any
+            const old = card.querySelector('.speech-bubble');
+            if (old) old.remove();
+
+            const bubble = document.createElement('div');
+            bubble.className = 'speech-bubble';
+            bubble.textContent = text;
+            bubble.style.cssText = `
+                position: absolute;
+                top: -35px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #fff;
+                color: #555;
+                padding: 4px 14px;
+                border-radius: 14px;
+                font-size: 0.9em;
+                font-weight: bold;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                white-space: nowrap;
+                animation: fade-in-out 2s ease forwards;
+                pointer-events: none;
+            `;
+            card.appendChild(bubble);
+            setTimeout(() => bubble.remove(), 2000);
+        }
+
+        // ============ LEVEL UP ============
+        function checkLevelUp() {
+            const threshold = getLevelThreshold(level);
+            if (love >= threshold) {
+                level++;
+                updateHUD();
+                showLevelUpPopup();
+                buildAnimalSelect();
+
+                // Auto-spawn newly unlocked animals
+                const newlyUnlocked = ANIMALS.filter(a => a.unlockLevel === level);
+                newlyUnlocked.forEach(a => spawnAnimalOnScreen(a));
+            }
+        }
+
+        function showLevelUpPopup() {
+            const popup = document.createElement('div');
+            popup.className = 'level-up-popup';
+
+            const newAnimals = ANIMALS.filter(a => a.unlockLevel === level);
+            let text = `🎉 רמה ${level}! 🎉`;
+            if (newAnimals.length > 0) {
+                text += `<br><span style="font-size:0.6em">חיה חדשה נפתחה: ${newAnimals.map(a => a.emoji + ' ' + a.name).join(', ')}!</span>`;
+            }
+            popup.innerHTML = text;
+            document.body.appendChild(popup);
+            setTimeout(() => popup.remove(), 1800);
+        }
+
+        // ============ ANIMAL SELECT BAR ============
+        function buildAnimalSelect() {
+            const bar = document.getElementById('animal-select');
+            bar.innerHTML = '';
+
+            ANIMALS.forEach(a => {
+                const btn = document.createElement('button');
+                btn.className = 'select-btn';
+                const unlocked = a.unlockLevel <= level;
+
+                if (!unlocked) {
+                    btn.classList.add('locked');
+                    btn.innerHTML = `
+                        <span class="sel-emoji">🔒</span>
+                        <span class="sel-name">${a.name}</span>
+                        <span class="sel-lock">רמה ${a.unlockLevel}</span>
+                    `;
+                } else {
+                    btn.innerHTML = `
+                        <span class="sel-emoji">${a.emoji}</span>
+                        <span class="sel-name">${a.name}</span>
+                    `;
+                    btn.addEventListener('click', () => {
+                        // Toggle animal on/off screen
+                        const onScreen = activeAnimals.find(x => x.data.id === a.id);
+                        if (onScreen) {
+                            removeAnimalFromScreen(a.id);
+                        } else {
+                            spawnAnimalOnScreen(a);
+                        }
+                    });
+                }
+
+                bar.appendChild(btn);
+            });
+        }
+
+        // ============ START GAME ============
+        function startGame() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.add('active');
+
+            gameStarted = true;
+
+            buildScenery();
+            buildAnimalSelect();
+            updateHUD();
+
+            // Spawn initial animals (cat & dog are level 1)
+            const starters = ANIMALS.filter(a => a.unlockLevel <= level);
+            starters.forEach(a => spawnAnimalOnScreen(a));
+
+            // Show instruction
+            const instr = document.createElement('div');
+            instr.className = 'instruction';
+            instr.textContent = '👆 לחצו והחזיקו על חיה כדי ללטף אותה!';
+            document.body.appendChild(instr);
+            setTimeout(() => instr.remove(), 4000);
+        }
+
+        function goHome() {
+            window.location.href = '../index.html';
+        }
+    </script>
+</body>
+</html>
