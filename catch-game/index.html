@@ -80,6 +80,7 @@
         .animals-preview span:nth-child(6) { animation-delay: 0.5s; }
         .animals-preview span:nth-child(7) { animation-delay: 0.6s; }
         .animals-preview span:nth-child(8) { animation-delay: 0.7s; }
+        .animals-preview span:nth-child(9) { animation-delay: 0.8s; }
 
         @keyframes bounce-animal {
             0%, 100% { transform: translateY(0); }
@@ -273,8 +274,9 @@
     <div id="start-screen">
         <a href="../index.html" class="back-link">🏠 חזרה לתפריט</a>
         <div class="start-title">תפוס את החיות! 🎯</div>
-        <div class="start-subtitle">עזרו לילדה החמודה לתפוס את כל החיות ולאסוף נקודות!</div>
+        <div class="start-subtitle">עזרו לילדה החמודה לתפוס את כל החיות ואת הדרקון ולאסוף נקודות!</div>
         <div class="animals-preview">
+            <span>🐉</span>
             <span>🦄</span>
             <span>🐱</span>
             <span>🐰</span>
@@ -316,13 +318,14 @@
         const MAX_ANIMALS = 8;
 
         const ANIMAL_TYPES = [
-            { emoji: '🦄', name: 'חד קרן', points: 50, speed: 3.5, size: 50, rarity: 0.08 },
-            { emoji: '🐱', name: 'חתול', points: 10, speed: 2.0, size: 42, rarity: 0.18 },
-            { emoji: '🐰', name: 'ארנב', points: 15, speed: 2.8, size: 40, rarity: 0.15 },
-            { emoji: '🐭', name: "צ'ינצ'ילה", points: 20, speed: 3.0, size: 38, rarity: 0.12 },
+            { emoji: '🐉', name: 'דרקון', points: 100, speed: 4.0, size: 60, rarity: 0.05 },
+            { emoji: '🦄', name: 'חד קרן', points: 50, speed: 3.5, size: 50, rarity: 0.07 },
+            { emoji: '🐱', name: 'חתול', points: 10, speed: 2.0, size: 42, rarity: 0.17 },
+            { emoji: '🐰', name: 'ארנב', points: 15, speed: 2.8, size: 40, rarity: 0.14 },
+            { emoji: '🐭', name: "צ'ינצ'ילה", points: 20, speed: 3.0, size: 38, rarity: 0.11 },
             { emoji: '🐼', name: 'דובי פנדה', points: 25, speed: 1.5, size: 55, rarity: 0.10 },
             { emoji: '🐻', name: 'דובי פנדה קטן', points: 30, speed: 2.0, size: 45, rarity: 0.10 },
-            { emoji: '🐘', name: 'פיל קטן', points: 20, speed: 1.2, size: 52, rarity: 0.12 },
+            { emoji: '🐘', name: 'פיל קטן', points: 20, speed: 1.2, size: 52, rarity: 0.11 },
             { emoji: '🐶', name: 'כלב', points: 10, speed: 2.2, size: 44, rarity: 0.15 },
         ];
 
