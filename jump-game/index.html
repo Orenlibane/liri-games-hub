@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>קפוץ את הסיפור! 🦘</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            height: 100vh; width: 100vw;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .screen {
+            position: fixed; inset: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            transition: opacity 0.4s ease;
+        }
+        .screen.hidden { opacity: 0; pointer-events: none; }
+
+        /* ── CHOOSE ANIMAL ─────────────────────────────── */
+        #screen-choose {
+            background: linear-gradient(160deg, #fce4ec 0%, #e1bee7 50%, #bbdefb 100%);
+            gap: 20px; padding: 20px;
+        }
+        #screen-choose h1 {
+            font-size: clamp(1.8em, 6vw, 2.8em);
+            color: #6a1b9a;
+            text-shadow: 2px 2px 8px rgba(106,27,154,0.15);
+            text-align: center;
+            animation: bounce-in 0.6s ease-out;
+        }
+        #screen-choose .subtitle {
+            font-size: 1.2em; color: #7b1fa2; text-align: center;
+        }
+        .animal-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 14px; width: 100%; max-width: 360px;
+        }
+        .animal-option {
+            background: rgba(255,255,255,0.88);
+            border: 3px solid #e1bee7; border-radius: 22px;
+            padding: 18px 10px; cursor: pointer; text-align: center;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        .animal-option:hover, .animal-option:active {
+            transform: scale(1.07); border-color: #ab47bc;
+            box-shadow: 0 8px 25px rgba(171,71,188,0.25);
+        }
+        .animal-option .aico { font-size: 55px; display: block; margin-bottom: 6px; }
+        .animal-option .aname { font-size: 1.1em; color: #6a1b9a; font-weight: bold; }
+
+        @keyframes bounce-in {
+            0% { transform: scale(0.5); opacity: 0; }
+            60% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* ── GAME SCREEN ───────────────────────────────── */
+        #screen-game {
+            background: linear-gradient(to bottom, #07001a 0%, #150038 45%, #240055 100%);
+            justify-content: flex-start; position: relative;
+        }
+
+        /* Stars */
+        #stars-layer { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+        .star-bg {
+            position: absolute; background: white; border-radius: 50%;
+            animation: twinkle ease-in-out infinite alternate;
+        }
+        @keyframes twinkle {
+            from { opacity: 0.15; transform: scale(0.6); }
+            to   { opacity: 0.95; transform: scale(1.3); }
+        }
+
+        /* Back */
+        .back-btn {
+            position: absolute; top: 12px; right: 12px; z-index: 100;
+            background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.25);
+            border-radius: 50%; width: 42px; height: 42px;
+            font-size: 18px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s; color: white; text-decoration: none;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.22); }
+
+        /* Story panel */
+        #story-panel {
+            position: relative; z-index: 10; width: 100%;
+            padding: 10px 50px 10px 14px;
+            background: rgba(255,255,255,0.07);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            min-height: 62px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+        }
+        #story-label { font-size: 0.7em; color: rgba(255,255,255,0.5); margin-bottom: 3px; }
+        #story-text {
+            font-size: clamp(0.85em, 3.5vw, 1.15em);
+            color: #fff; text-align: center; direction: rtl;
+            line-height: 1.7; max-width: 95%;
+        }
+        .sw-done { color: #ffd700; font-weight: bold; }
+        .sw-blank { color: rgba(255,255,255,0.2); font-size: 0.8em; }
+
+        /* Progress dots */
+        #prog-bar {
+            position: relative; z-index: 10;
+            display: flex; gap: 5px; padding: 7px 10px;
+            justify-content: center; flex-wrap: wrap;
+        }
+        .pdot {
+            width: 9px; height: 9px; border-radius: 50%;
+            background: rgba(255,255,255,0.18);
+            transition: all 0.3s;
+        }
+        .pdot.done {
+            background: #ffd700;
+            box-shadow: 0 0 7px rgba(255,215,0,0.8);
+            transform: scale(1.25);
+        }
+
+        /* Play area */
+        #play-area {
+            flex: 1; position: relative; width: 100%; overflow: hidden;
+        }
+
+        /* Animal */
+        #animal-wrap {
+            position: absolute; left: 50%; top: 22%;
+            transform: translateX(-50%);
+            z-index: 5; text-align: center;
+        }
+        #animal-char {
+            font-size: clamp(60px, 14vw, 80px); display: block;
+            filter: drop-shadow(0 8px 20px rgba(0,0,0,0.5));
+            animation: bob 1.8s ease-in-out infinite;
+        }
+        @keyframes bob {
+            0%, 100% { transform: translateY(0) rotate(-4deg); }
+            50%       { transform: translateY(-18px) rotate(4deg); }
+        }
+        #animal-char.do-jump {
+            animation: jump-anim 0.65s cubic-bezier(0.15, 0.85, 0.45, 1.2) forwards;
+        }
+        @keyframes jump-anim {
+            0%   { transform: translateY(0) scale(1) rotate(0deg); }
+            28%  { transform: translateY(-95px) scale(1.25) rotate(18deg); }
+            60%  { transform: translateY(-70px) scale(1.12) rotate(-10deg); }
+            100% { transform: translateY(0) scale(1) rotate(0deg); }
+        }
+
+        /* Platform */
+        #platform {
+            position: absolute; left: 4%; right: 4%;
+            border-radius: 22px 22px 0 0;
+            z-index: 3;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 12px 20px;
+            background: linear-gradient(to top, rgba(123,31,162,0.95) 0%, rgba(186,104,200,0.88) 100%);
+            border: 2px solid rgba(255,255,255,0.28);
+            box-shadow: 0 -12px 45px rgba(123,31,162,0.55);
+            min-height: 88px;
+        }
+        #word-display {
+            font-size: clamp(1.8em, 8vw, 2.8em); font-weight: bold;
+            color: #fff; text-shadow: 0 2px 14px rgba(0,0,0,0.45);
+            direction: rtl; text-align: center; line-height: 1.3;
+        }
+        #word-hint {
+            font-size: 0.75em; color: rgba(255,255,255,0.7); margin-top: 4px;
+            text-align: center;
+        }
+
+        /* Danger bar */
+        #danger-wrap {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            height: 5px; background: rgba(255,255,255,0.08); z-index: 15;
+        }
+        #danger-fill {
+            height: 100%; width: 0%;
+            background: linear-gradient(to right, #4fc3f7, #f06292, #ef5350);
+            transition: background-color 0.5s;
+        }
+
+        /* Collect animation */
+        .collect-anim {
+            position: fixed; font-size: 1.6em; font-weight: bold; color: #ffd700;
+            pointer-events: none; z-index: 200;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            animation: fly-up 0.85s ease-out forwards;
+            direction: rtl; white-space: nowrap;
+        }
+        @keyframes fly-up {
+            0%   { opacity: 1; transform: translateY(0) scale(1); }
+            40%  { opacity: 1; transform: translateY(-50px) scale(1.1); }
+            100% { opacity: 0; transform: translateY(-130px) scale(0.6); }
+        }
+
+        /* Jump button */
+        #jump-btn {
+            position: relative; z-index: 20;
+            width: 88%; max-width: 340px;
+            margin: 8px auto 10px;
+            padding: 17px; border: none; border-radius: 40px;
+            background: linear-gradient(135deg, #f48fb1 0%, #ce93d8 55%, #90caf9 100%);
+            color: #fff; font-size: clamp(1.3em, 5vw, 1.7em); font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 8px 28px rgba(244,143,177,0.55);
+            transition: transform 0.1s, box-shadow 0.1s;
+            letter-spacing: 0.03em;
+        }
+        #jump-btn:active { transform: scale(0.95); box-shadow: 0 4px 14px rgba(244,143,177,0.3); }
+        #jump-btn.off { opacity: 0.45; pointer-events: none; }
+
+        /* ── STORY REVEAL ──────────────────────────────── */
+        #screen-story {
+            background: linear-gradient(160deg, #fce4ec 0%, #f3e5f5 50%, #e8eaf6 100%);
+            padding: 20px; gap: 16px; overflow-y: auto;
+            justify-content: flex-start; padding-top: 30px;
+        }
+        #screen-story h2 {
+            font-size: clamp(1.6em, 5.5vw, 2.2em);
+            color: #6a1b9a; text-align: center;
+            animation: bounce-in 0.6s ease-out;
+        }
+        #screen-story .sub {
+            font-size: 1em; color: #7b1fa2; text-align: center;
+        }
+        #story-card {
+            background: rgba(255,255,255,0.92);
+            border-radius: 24px; padding: 22px 26px;
+            width: 100%; max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border: 3px solid #e1bee7; direction: rtl;
+        }
+        #story-card p {
+            font-size: clamp(1.1em, 4vw, 1.45em);
+            line-height: 2; color: #4a148c; text-align: right;
+            opacity: 0; transform: translateX(-18px);
+            animation: slide-in 0.5s ease-out forwards;
+        }
+        @keyframes slide-in { to { opacity: 1; transform: translateX(0); } }
+        #reveal-animal { font-size: 70px; text-align: center; }
+        #play-again-btn {
+            background: linear-gradient(135deg, #ab47bc, #7b1fa2);
+            color: #fff; border: none;
+            padding: 15px 46px; border-radius: 30px;
+            font-size: 1.3em; font-weight: bold; cursor: pointer;
+            box-shadow: 0 6px 20px rgba(123,31,162,0.3);
+            transition: transform 0.2s;
+            margin-bottom: 20px;
+        }
+        #play-again-btn:hover { transform: scale(1.05); }
+
+        /* Confetti */
+        #confetti-canvas {
+            position: fixed; inset: 0;
+            pointer-events: none; z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+
+<!-- ══ SCREEN 1: CHOOSE ANIMAL ══════════════════════════ -->
+<div id="screen-choose" class="screen">
+    <h1>🦘 קפוץ את הסיפור!</h1>
+    <p class="subtitle">בחרי את החיה שלך:</p>
+    <div class="animal-grid">
+        <div class="animal-option" onclick="chooseAnimal('🐸','צְפַרְדֵּעַ')">
+            <span class="aico">🐸</span><span class="aname">צְפַרְדֵּעַ</span>
+        </div>
+        <div class="animal-option" onclick="chooseAnimal('🦋','פַּרְפַּר')">
+            <span class="aico">🦋</span><span class="aname">פַּרְפַּר</span>
+        </div>
+        <div class="animal-option" onclick="chooseAnimal('🐰','אַרְנָב')">
+            <span class="aico">🐰</span><span class="aname">אַרְנָב</span>
+        </div>
+        <div class="animal-option" onclick="chooseAnimal('🦄','חַד-קֶרֶן')">
+            <span class="aico">🦄</span><span class="aname">חַד-קֶרֶן</span>
+        </div>
+    </div>
+</div>
+
+<!-- ══ SCREEN 2: GAME ══════════════════════════════════ -->
+<div id="screen-game" class="screen hidden">
+    <div id="story-panel">
+        <div id="story-label">📖 הסיפור מתגלה...</div>
+        <div id="story-text"></div>
+    </div>
+    <div id="prog-bar"></div>
+
+    <div id="play-area">
+        <div id="stars-layer"></div>
+        <a href="../index.html" class="back-btn" title="חזרה">🏠</a>
+
+        <div id="animal-wrap">
+            <span id="animal-char">🐸</span>
+        </div>
+
+        <div id="platform">
+            <div id="word-display"></div>
+            <div id="word-hint">קְרָאִי אֶת הַמִּלָּה וּלְחַצִי קָפוֹץ! 👇</div>
+        </div>
+
+        <div id="danger-wrap"><div id="danger-fill"></div></div>
+    </div>
+
+    <button id="jump-btn" onclick="doJump()">🦘 קָפוֹץ!</button>
+</div>
+
+<!-- ══ SCREEN 3: STORY REVEAL ══════════════════════════ -->
+<div id="screen-story" class="screen hidden">
+    <h2>🎉 כָּל הַכָּבוֹד לִירִי! 🎉</h2>
+    <p class="sub">קָרָאתְ אֶת כָּל הַמִּלִּים וּבָנִיתְ סִיפּוּר!</p>
+    <div id="story-card"></div>
+    <div id="reveal-animal"></div>
+    <button id="play-again-btn" onclick="restartGame()">🔄 שַׂחֲקִי שׁוּב!</button>
+</div>
+
+<script>
+// ── STORY DATA ─────────────────────────────────────────
+const CHUNKS = [
+    "פַּעַם הָיְתָה",
+    "נְסִיכָה קְטַנָּה",
+    "בְּשֵׁם לִירִי",
+    "הִיא אָהֲבָה לִקְרֹא",
+    "יוֹם אֶחָד",
+    "יָצָא מִן הַסֵּפֶר",
+    "כּוֹכָב קָסוּם",
+    "הוּא אָמַר לָהּ",
+    "בּוֹאִי נָטוּס",
+    "יַחַד אֶל הַיָּרֵחַ",
+    "לִירִי חִיְּכָה",
+    "וְטָסָה גָּבוֹהַּ גָּבוֹהַּ",
+    "וְחָיוּ בְּשִׂמְחָה לָעַד ✨"
+];
+
+const STORY_LINES = [
+    "פַּעַם הָיְתָה נְסִיכָה קְטַנָּה בְּשֵׁם לִירִי.",
+    "הִיא אָהֲבָה לִקְרֹא.",
+    "יוֹם אֶחָד יָצָא מִן הַסֵּפֶר כּוֹכָב קָסוּם.",
+    'הוּא אָמַר לָהּ: "בּוֹאִי נָטוּס יַחַד אֶל הַיָּרֵחַ!"',
+    "לִירִי חִיְּכָה וְטָסָה גָּבוֹהַּ גָּבוֹהַּ.",
+    "וְחָיוּ בְּשִׂמְחָה לָעַד! 🌟"
+];
+
+// ── STATE ───────────────────────────────────────────────
+let chosenAnimal = '🐸';
+let chunkIdx = 0;
+let isJumping = false;
+let gameActive = false;
+let riseRAF = null;
+let platformBottom = -100; // px from bottom of play-area
+let dangerPct = 0;
+
+// ── STARS ───────────────────────────────────────────────
+(function buildStars() {
+    const layer = document.getElementById('stars-layer');
+    for (let i = 0; i < 65; i++) {
+        const s = document.createElement('div');
+        s.className = 'star-bg';
+        const sz = Math.random() * 3.5 + 1;
+        s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${Math.random()*2+1.4}s;animation-delay:${Math.random()*2.5}s;`;
+        layer.appendChild(s);
+    }
+})();
+
+// ── CHOOSE ANIMAL ───────────────────────────────────────
+function chooseAnimal(emoji, name) {
+    chosenAnimal = emoji;
+    document.getElementById('animal-char').textContent = emoji;
+    document.getElementById('reveal-animal').textContent = emoji;
+    showScreen('screen-game');
+    startGame();
+}
+
+// ── START GAME ──────────────────────────────────────────
+function startGame() {
+    chunkIdx = 0; isJumping = false; gameActive = true;
+
+    // Progress dots
+    const bar = document.getElementById('prog-bar');
+    bar.innerHTML = '';
+    CHUNKS.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = 'pdot'; d.id = `pd${i}`;
+        bar.appendChild(d);
+    });
+
+    renderStoryText();
+    presentChunk();
+}
+
+// ── PRESENT NEXT CHUNK ──────────────────────────────────
+function presentChunk() {
+    if (chunkIdx >= CHUNKS.length) { endGame(); return; }
+
+    const chunk = CHUNKS[chunkIdx];
+    document.getElementById('word-display').textContent = chunk;
+    document.getElementById('word-hint').style.display = chunkIdx === 0 ? 'block' : 'none';
+    document.getElementById('jump-btn').classList.remove('off');
+
+    // Platform: reset below screen
+    const platform = document.getElementById('platform');
+    platformBottom = -(platform.offsetHeight + 10);
+    platform.style.bottom = platformBottom + 'px';
+    dangerPct = 0;
+    document.getElementById('danger-fill').style.width = '0%';
+
+    // Rise speed: 3.8s for chunk 0, down to 2.4s by end
+    const totalMs = Math.max(2400, 3800 - chunkIdx * 110);
+    const playArea = document.getElementById('play-area');
+    const playH = playArea.offsetHeight;
+    const animalWrap = document.getElementById('animal-wrap');
+    const animalY = animalWrap.offsetTop + animalWrap.offsetHeight; // bottom of animal
+    const targetBottom = playH - animalY - 10; // platform top just reaches animal feet
+
+    const startBottom = platformBottom;
+    const startTime = performance.now();
+
+    function rise(now) {
+        if (!gameActive || isJumping) return;
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / totalMs, 1);
+        platformBottom = startBottom + (targetBottom - startBottom) * progress;
+        platform.style.bottom = platformBottom + 'px';
+        dangerPct = progress * 100;
+        document.getElementById('danger-fill').style.width = dangerPct + '%';
+
+        if (progress < 1) {
+            riseRAF = requestAnimationFrame(rise);
+        } else {
+            // Reached the animal — auto-jump (gentle for kids)
+            doJump(true);
+        }
+    }
+    riseRAF = requestAnimationFrame(rise);
+}
+
+// ── JUMP ────────────────────────────────────────────────
+function doJump(auto = false) {
+    if (isJumping || !gameActive) return;
+    isJumping = true;
+    cancelAnimationFrame(riseRAF);
+    document.getElementById('jump-btn').classList.add('off');
+
+    // Mark collected
+    document.getElementById(`pd${chunkIdx}`).classList.add('done');
+    spawnCollectAnim(CHUNKS[chunkIdx]);
+
+    // Slide platform down
+    const platform = document.getElementById('platform');
+    platform.style.transition = 'bottom 0.35s ease-in';
+    platform.style.bottom = (-(platform.offsetHeight + 20)) + 'px';
+    setTimeout(() => { platform.style.transition = ''; }, 400);
+
+    // Jump animation on animal
+    const animalEl = document.getElementById('animal-char');
+    animalEl.style.animation = 'none';
+    void animalEl.offsetWidth;
+    animalEl.style.animation = 'do-jump 0.65s cubic-bezier(0.15,0.85,0.45,1.2) forwards';
+
+    chunkIdx++;
+    renderStoryText();
+
+    setTimeout(() => {
+        animalEl.style.animation = '';
+        void animalEl.offsetWidth;
+        animalEl.style.animation = 'bob 1.8s ease-in-out infinite';
+        isJumping = false;
+        if (chunkIdx < CHUNKS.length) {
+            setTimeout(presentChunk, 350);
+        } else {
+            setTimeout(endGame, 500);
+        }
+    }, 680);
+}
+
+// ── STORY TEXT (top panel) ──────────────────────────────
+function renderStoryText() {
+    const container = document.getElementById('story-text');
+    const parts = CHUNKS.map((c, i) => {
+        if (i < chunkIdx)
+            return `<span class="sw-done">${c}</span>`;
+        else
+            return `<span class="sw-blank">∙∙∙</span>`;
+    });
+    container.innerHTML = parts.join(' ');
+    // Scroll to keep latest word in view
+    container.scrollLeft = 0;
+}
+
+// ── COLLECT ANIMATION ───────────────────────────────────
+function spawnCollectAnim(text) {
+    const platform = document.getElementById('platform');
+    const rect = platform.getBoundingClientRect();
+    const el = document.createElement('div');
+    el.className = 'collect-anim';
+    el.textContent = '⭐ ' + text;
+    el.style.left = (rect.left + rect.width / 2 - 80) + 'px';
+    el.style.top  = rect.top + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 900);
+}
+
+// ── END GAME ────────────────────────────────────────────
+function endGame() {
+    gameActive = false;
+    cancelAnimationFrame(riseRAF);
+    showScreen('screen-story');
+    buildReveal();
+    launchConfetti();
+}
+
+function buildReveal() {
+    const card = document.getElementById('story-card');
+    card.innerHTML = '';
+    STORY_LINES.forEach((line, i) => {
+        const p = document.createElement('p');
+        p.textContent = line;
+        p.style.animationDelay = `${i * 0.35}s`;
+        card.appendChild(p);
+    });
+}
+
+// ── CONFETTI ────────────────────────────────────────────
+const confCvs = document.getElementById('confetti-canvas');
+const confCtx = confCvs.getContext('2d');
+let pieces = []; let confActive = false;
+
+function resizeConf() { confCvs.width = innerWidth; confCvs.height = innerHeight; }
+window.addEventListener('resize', resizeConf);
+resizeConf();
+
+function launchConfetti() {
+    pieces = [];
+    const cols = ['#f48fb1','#ce93d8','#90caf9','#a5d6a7','#fff59d','#ffab91','#ffd700'];
+    for (let i = 0; i < 130; i++) {
+        pieces.push({
+            x: Math.random() * confCvs.width,
+            y: -20 - Math.random() * 250,
+            w: Math.random() * 11 + 5, h: Math.random() * 7 + 3,
+            color: cols[Math.floor(Math.random() * cols.length)],
+            vx: (Math.random() - 0.5) * 6,
+            vy: Math.random() * 5 + 2,
+            rot: Math.random() * 360,
+            rotV: (Math.random() - 0.5) * 11,
+            life: 1
+        });
+    }
+    if (!confActive) { confActive = true; animConf(); }
+}
+
+function animConf() {
+    confCtx.clearRect(0, 0, confCvs.width, confCvs.height);
+    pieces.forEach(p => {
+        p.x += p.vx; p.y += p.vy; p.vy += 0.13;
+        p.rot += p.rotV; p.life -= 0.006;
+        if (p.life > 0) {
+            confCtx.save();
+            confCtx.translate(p.x, p.y);
+            confCtx.rotate(p.rot * Math.PI / 180);
+            confCtx.globalAlpha = p.life;
+            confCtx.fillStyle = p.color;
+            confCtx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+            confCtx.restore();
+        }
+    });
+    pieces = pieces.filter(p => p.life > 0);
+    if (pieces.length > 0) requestAnimationFrame(animConf);
+    else { confActive = false; confCtx.clearRect(0,0,confCvs.width,confCvs.height); }
+}
+
+// ── HELPERS ─────────────────────────────────────────────
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+}
+
+function restartGame() { showScreen('screen-choose'); }
+
+// Keyboard: Space / ArrowUp = jump
+document.addEventListener('keydown', e => {
+    if (e.code === 'Space' || e.code === 'ArrowUp') {
+        e.preventDefault(); doJump();
+    }
+});
+</script>
+</body>
+</html>
