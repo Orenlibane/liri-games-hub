@@ -9,311 +9,310 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, sans-serif;
-            height: 100vh; width: 100vw;
+            height: 100dvh; width: 100vw;
             overflow: hidden;
-            user-select: none;
-            -webkit-user-select: none;
+            user-select: none; -webkit-user-select: none;
+            touch-action: manipulation;
         }
 
         .screen {
             position: fixed; inset: 0;
             display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            transition: opacity 0.4s ease;
+            align-items: center;
+            transition: opacity 0.35s ease;
         }
         .screen.hidden { opacity: 0; pointer-events: none; }
 
         /* ── CHOOSE ANIMAL ─────────────────────────────── */
         #screen-choose {
             background: linear-gradient(160deg, #fce4ec 0%, #e1bee7 50%, #bbdefb 100%);
-            gap: 20px; padding: 20px;
+            justify-content: center; gap: 22px; padding: 24px;
         }
         #screen-choose h1 {
-            font-size: clamp(1.8em, 6vw, 2.8em);
-            color: #6a1b9a;
-            text-shadow: 2px 2px 8px rgba(106,27,154,0.15);
-            text-align: center;
-            animation: bounce-in 0.6s ease-out;
+            font-size: clamp(1.9em, 6vw, 2.8em);
+            color: #6a1b9a; text-align: center;
+            animation: pop-in 0.5s ease-out;
         }
-        #screen-choose .subtitle {
+        #screen-choose .sub {
             font-size: 1.2em; color: #7b1fa2; text-align: center;
         }
         .animal-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr);
-            gap: 14px; width: 100%; max-width: 360px;
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 14px; width: 100%; max-width: 340px;
         }
-        .animal-option {
-            background: rgba(255,255,255,0.88);
+        .animal-btn {
+            background: rgba(255,255,255,0.9);
             border: 3px solid #e1bee7; border-radius: 22px;
             padding: 18px 10px; cursor: pointer; text-align: center;
-            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.07);
         }
-        .animal-option:hover, .animal-option:active {
-            transform: scale(1.07); border-color: #ab47bc;
-            box-shadow: 0 8px 25px rgba(171,71,188,0.25);
-        }
-        .animal-option .aico { font-size: 55px; display: block; margin-bottom: 6px; }
-        .animal-option .aname { font-size: 1.1em; color: #6a1b9a; font-weight: bold; }
+        .animal-btn:active { transform: scale(0.96); }
+        .animal-btn:hover  { border-color: #ab47bc; box-shadow: 0 8px 22px rgba(171,71,188,0.22); transform: scale(1.05); }
+        .animal-btn .ico { font-size: 54px; display: block; margin-bottom: 6px; }
+        .animal-btn .nm  { font-size: 1.05em; color: #6a1b9a; font-weight: bold; }
 
-        @keyframes bounce-in {
-            0% { transform: scale(0.5); opacity: 0; }
-            60% { transform: scale(1.1); }
-            100% { transform: scale(1); opacity: 1; }
+        @keyframes pop-in {
+            from { transform: scale(0.5); opacity: 0; }
+            60%  { transform: scale(1.08); }
+            to   { transform: scale(1);   opacity: 1; }
         }
 
         /* ── GAME SCREEN ───────────────────────────────── */
         #screen-game {
-            background: linear-gradient(to bottom, #07001a 0%, #150038 45%, #240055 100%);
-            justify-content: flex-start; position: relative;
+            background: linear-gradient(to bottom, #060012 0%, #120030 50%, #1e0048 100%);
+            justify-content: flex-start;
         }
 
         /* Stars */
-        #stars-layer { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
-        .star-bg {
-            position: absolute; background: white; border-radius: 50%;
+        .star {
+            position: absolute; background: #fff; border-radius: 50%;
+            pointer-events: none;
             animation: twinkle ease-in-out infinite alternate;
         }
         @keyframes twinkle {
-            from { opacity: 0.15; transform: scale(0.6); }
-            to   { opacity: 0.95; transform: scale(1.3); }
+            from { opacity: 0.1; transform: scale(0.5); }
+            to   { opacity: 1;   transform: scale(1.4); }
         }
-
-        /* Back */
-        .back-btn {
-            position: absolute; top: 12px; right: 12px; z-index: 100;
-            background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.25);
-            border-radius: 50%; width: 42px; height: 42px;
-            font-size: 18px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: background 0.2s; color: white; text-decoration: none;
-        }
-        .back-btn:hover { background: rgba(255,255,255,0.22); }
 
         /* Story panel */
         #story-panel {
             position: relative; z-index: 10; width: 100%;
-            padding: 10px 50px 10px 14px;
-            background: rgba(255,255,255,0.07);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            min-height: 62px;
+            padding: 8px 48px 8px 10px;
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            min-height: 58px;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
+            flex-shrink: 0;
         }
-        #story-label { font-size: 0.7em; color: rgba(255,255,255,0.5); margin-bottom: 3px; }
+        #story-label {
+            font-size: 0.68em; color: rgba(255,255,255,0.45); margin-bottom: 2px;
+        }
         #story-text {
-            font-size: clamp(0.85em, 3.5vw, 1.15em);
-            color: #fff; text-align: center; direction: rtl;
-            line-height: 1.7; max-width: 95%;
+            font-size: clamp(0.9em, 3.8vw, 1.2em);
+            color: #ffd700; text-align: center; direction: rtl;
+            font-weight: bold; min-height: 1.4em;
         }
-        .sw-done { color: #ffd700; font-weight: bold; }
-        .sw-blank { color: rgba(255,255,255,0.2); font-size: 0.8em; }
+        #story-blanks {
+            font-size: 0.75em; color: rgba(255,255,255,0.18);
+            text-align: center;
+        }
+
+        /* Back button */
+        .back-btn {
+            position: absolute; top: 8px; right: 8px; z-index: 50;
+            background: rgba(255,255,255,0.1); border: 1.5px solid rgba(255,255,255,0.2);
+            border-radius: 50%; width: 38px; height: 38px;
+            font-size: 17px; cursor: pointer; text-decoration: none; color: white;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.2); }
 
         /* Progress dots */
-        #prog-bar {
-            position: relative; z-index: 10;
-            display: flex; gap: 5px; padding: 7px 10px;
-            justify-content: center; flex-wrap: wrap;
+        #prog-row {
+            z-index: 10; display: flex; gap: 5px;
+            padding: 5px 10px; justify-content: center; flex-wrap: wrap;
+            flex-shrink: 0;
         }
-        .pdot {
-            width: 9px; height: 9px; border-radius: 50%;
-            background: rgba(255,255,255,0.18);
-            transition: all 0.3s;
+        .dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            transition: background 0.3s, transform 0.3s;
         }
-        .pdot.done {
+        .dot.lit {
             background: #ffd700;
-            box-shadow: 0 0 7px rgba(255,215,0,0.8);
-            transform: scale(1.25);
+            box-shadow: 0 0 6px rgba(255,215,0,0.9);
+            transform: scale(1.3);
         }
 
         /* Play area */
         #play-area {
-            flex: 1; position: relative; width: 100%; overflow: hidden;
+            flex: 1; position: relative; width: 100%;
+            overflow: hidden; cursor: pointer;
         }
 
-        /* Animal */
+        /* Animal — anchored by its BOTTOM edge: 52% from play-area bottom */
         #animal-wrap {
-            position: absolute; left: 50%; top: 22%;
+            position: absolute; left: 50%;
+            /* bottom set by JS after layout */
             transform: translateX(-50%);
             z-index: 5; text-align: center;
+            pointer-events: none;
         }
         #animal-char {
-            font-size: clamp(60px, 14vw, 80px); display: block;
-            filter: drop-shadow(0 8px 20px rgba(0,0,0,0.5));
-            animation: bob 1.8s ease-in-out infinite;
+            font-size: clamp(56px, 13vw, 76px); display: block;
+            filter: drop-shadow(0 6px 18px rgba(0,0,0,0.55));
+            animation: bob 1.9s ease-in-out infinite;
         }
         @keyframes bob {
-            0%, 100% { transform: translateY(0) rotate(-4deg); }
-            50%       { transform: translateY(-18px) rotate(4deg); }
+            0%, 100% { transform: translateY(0)    rotate(-5deg); }
+            50%       { transform: translateY(-16px) rotate(5deg); }
         }
-        #animal-char.do-jump {
-            animation: jump-anim 0.65s cubic-bezier(0.15, 0.85, 0.45, 1.2) forwards;
-        }
-        @keyframes jump-anim {
-            0%   { transform: translateY(0) scale(1) rotate(0deg); }
-            28%  { transform: translateY(-95px) scale(1.25) rotate(18deg); }
-            60%  { transform: translateY(-70px) scale(1.12) rotate(-10deg); }
-            100% { transform: translateY(0) scale(1) rotate(0deg); }
+        @keyframes do-jump {
+            0%   { transform: translateY(0)     scale(1)    rotate(0deg);  }
+            25%  { transform: translateY(-100px) scale(1.28) rotate(20deg); }
+            55%  { transform: translateY(-75px)  scale(1.12) rotate(-12deg); }
+            100% { transform: translateY(0)     scale(1)    rotate(0deg);  }
         }
 
-        /* Platform */
+        /* Platform — starts below screen, rises via JS */
         #platform {
-            position: absolute; left: 4%; right: 4%;
-            border-radius: 22px 22px 0 0;
+            position: absolute; left: 3%; right: 3%;
+            bottom: -200px;          /* hidden below screen initially */
+            border-radius: 20px 20px 0 0;
             z-index: 3;
+            background: linear-gradient(to top, rgba(100,20,150,0.97) 0%, rgba(180,90,210,0.9) 100%);
+            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: 0 -10px 40px rgba(150,50,200,0.6),
+                        inset 0 1px 0 rgba(255,255,255,0.2);
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
-            padding: 12px 20px;
-            background: linear-gradient(to top, rgba(123,31,162,0.95) 0%, rgba(186,104,200,0.88) 100%);
-            border: 2px solid rgba(255,255,255,0.28);
-            box-shadow: 0 -12px 45px rgba(123,31,162,0.55);
-            min-height: 88px;
+            padding: 14px 18px 18px;
+            min-height: 90px;
+        }
+        #platform-label {
+            font-size: 0.72em; color: rgba(255,255,255,0.6);
+            margin-bottom: 6px;
         }
         #word-display {
-            font-size: clamp(1.8em, 8vw, 2.8em); font-weight: bold;
-            color: #fff; text-shadow: 0 2px 14px rgba(0,0,0,0.45);
-            direction: rtl; text-align: center; line-height: 1.3;
-        }
-        #word-hint {
-            font-size: 0.75em; color: rgba(255,255,255,0.7); margin-top: 4px;
-            text-align: center;
+            font-size: clamp(2.2em, 9vw, 3.2em);
+            font-weight: 900; color: #fff;
+            text-shadow: 0 0 25px rgba(255,255,255,0.7), 0 2px 8px rgba(0,0,0,0.6);
+            direction: rtl; text-align: center; line-height: 1.25;
+            letter-spacing: 0.04em;
         }
 
-        /* Danger bar */
-        #danger-wrap {
+        /* Danger strip at bottom of play-area */
+        #danger-strip {
             position: absolute; bottom: 0; left: 0; right: 0;
-            height: 5px; background: rgba(255,255,255,0.08); z-index: 15;
+            height: 4px; z-index: 15;
+            background: rgba(255,255,255,0.07);
         }
         #danger-fill {
             height: 100%; width: 0%;
-            background: linear-gradient(to right, #4fc3f7, #f06292, #ef5350);
-            transition: background-color 0.5s;
+            background: linear-gradient(to right, #4fc3f7 0%, #f06292 60%, #ef5350 100%);
         }
 
-        /* Collect animation */
-        .collect-anim {
-            position: fixed; font-size: 1.6em; font-weight: bold; color: #ffd700;
-            pointer-events: none; z-index: 200;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.4);
-            animation: fly-up 0.85s ease-out forwards;
-            direction: rtl; white-space: nowrap;
+        /* Floating word when collected */
+        .word-burst {
+            position: fixed; font-weight: bold; color: #ffd700;
+            font-size: 1.5em; pointer-events: none; z-index: 300;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            white-space: nowrap; direction: rtl;
+            animation: burst-up 0.9s ease-out forwards;
         }
-        @keyframes fly-up {
+        @keyframes burst-up {
             0%   { opacity: 1; transform: translateY(0) scale(1); }
-            40%  { opacity: 1; transform: translateY(-50px) scale(1.1); }
-            100% { opacity: 0; transform: translateY(-130px) scale(0.6); }
+            40%  { opacity: 1; transform: translateY(-60px) scale(1.15); }
+            100% { opacity: 0; transform: translateY(-140px) scale(0.5); }
         }
 
         /* Jump button */
         #jump-btn {
-            position: relative; z-index: 20;
-            width: 88%; max-width: 340px;
-            margin: 8px auto 10px;
-            padding: 17px; border: none; border-radius: 40px;
+            flex-shrink: 0; z-index: 20;
+            width: 86%; max-width: 320px;
+            margin: 7px auto 9px;
+            padding: 16px; border: none; border-radius: 38px;
             background: linear-gradient(135deg, #f48fb1 0%, #ce93d8 55%, #90caf9 100%);
-            color: #fff; font-size: clamp(1.3em, 5vw, 1.7em); font-weight: bold;
+            color: #fff; font-size: clamp(1.3em, 4.5vw, 1.65em); font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 8px 28px rgba(244,143,177,0.55);
-            transition: transform 0.1s, box-shadow 0.1s;
-            letter-spacing: 0.03em;
+            box-shadow: 0 7px 25px rgba(244,143,177,0.5);
+            transition: transform 0.1s, box-shadow 0.08s;
+            -webkit-tap-highlight-color: transparent;
         }
-        #jump-btn:active { transform: scale(0.95); box-shadow: 0 4px 14px rgba(244,143,177,0.3); }
-        #jump-btn.off { opacity: 0.45; pointer-events: none; }
+        #jump-btn:active { transform: scale(0.94); box-shadow: 0 3px 12px rgba(244,143,177,0.3); }
 
         /* ── STORY REVEAL ──────────────────────────────── */
         #screen-story {
             background: linear-gradient(160deg, #fce4ec 0%, #f3e5f5 50%, #e8eaf6 100%);
-            padding: 20px; gap: 16px; overflow-y: auto;
-            justify-content: flex-start; padding-top: 30px;
+            padding: 24px 18px; gap: 14px;
+            overflow-y: auto; justify-content: flex-start;
         }
         #screen-story h2 {
-            font-size: clamp(1.6em, 5.5vw, 2.2em);
+            font-size: clamp(1.7em, 5.5vw, 2.3em);
             color: #6a1b9a; text-align: center;
-            animation: bounce-in 0.6s ease-out;
+            animation: pop-in 0.5s ease-out;
+            margin-top: 10px;
         }
-        #screen-story .sub {
-            font-size: 1em; color: #7b1fa2; text-align: center;
-        }
+        #screen-story .sub { font-size: 1em; color: #7b1fa2; text-align: center; }
         #story-card {
-            background: rgba(255,255,255,0.92);
-            border-radius: 24px; padding: 22px 26px;
-            width: 100%; max-width: 500px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.93);
+            border-radius: 22px; padding: 20px 24px;
+            width: 100%; max-width: 480px;
+            box-shadow: 0 10px 38px rgba(0,0,0,0.1);
             border: 3px solid #e1bee7; direction: rtl;
         }
-        #story-card p {
-            font-size: clamp(1.1em, 4vw, 1.45em);
-            line-height: 2; color: #4a148c; text-align: right;
-            opacity: 0; transform: translateX(-18px);
+        .story-line {
+            font-size: clamp(1.1em, 4vw, 1.4em);
+            line-height: 2.1; color: #4a148c; text-align: right;
+            opacity: 0; transform: translateX(20px);
             animation: slide-in 0.5s ease-out forwards;
         }
         @keyframes slide-in { to { opacity: 1; transform: translateX(0); } }
-        #reveal-animal { font-size: 70px; text-align: center; }
-        #play-again-btn {
+        #reveal-animal { font-size: 65px; text-align: center; }
+        #again-btn {
             background: linear-gradient(135deg, #ab47bc, #7b1fa2);
             color: #fff; border: none;
-            padding: 15px 46px; border-radius: 30px;
-            font-size: 1.3em; font-weight: bold; cursor: pointer;
-            box-shadow: 0 6px 20px rgba(123,31,162,0.3);
-            transition: transform 0.2s;
-            margin-bottom: 20px;
+            padding: 14px 44px; border-radius: 30px;
+            font-size: 1.25em; font-weight: bold; cursor: pointer;
+            box-shadow: 0 6px 18px rgba(123,31,162,0.3);
+            transition: transform 0.15s;
+            margin-bottom: 24px;
         }
-        #play-again-btn:hover { transform: scale(1.05); }
+        #again-btn:hover { transform: scale(1.05); }
 
         /* Confetti */
-        #confetti-canvas {
-            position: fixed; inset: 0;
-            pointer-events: none; z-index: 1000;
-        }
+        #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 1000; }
     </style>
 </head>
 <body>
 
-<canvas id="confetti-canvas"></canvas>
+<canvas id="confetti"></canvas>
 
 <!-- ══ SCREEN 1: CHOOSE ANIMAL ══════════════════════════ -->
 <div id="screen-choose" class="screen">
     <h1>🦘 קפוץ את הסיפור!</h1>
-    <p class="subtitle">בחרי את החיה שלך:</p>
+    <p class="sub">בחרי את החיה שלך:</p>
     <div class="animal-grid">
-        <div class="animal-option" onclick="chooseAnimal('🐸','צְפַרְדֵּעַ')">
-            <span class="aico">🐸</span><span class="aname">צְפַרְדֵּעַ</span>
+        <div class="animal-btn" onclick="chooseAnimal('🐸','צְפַרְדֵּעַ')">
+            <span class="ico">🐸</span><span class="nm">צְפַרְדֵּעַ</span>
         </div>
-        <div class="animal-option" onclick="chooseAnimal('🦋','פַּרְפַּר')">
-            <span class="aico">🦋</span><span class="aname">פַּרְפַּר</span>
+        <div class="animal-btn" onclick="chooseAnimal('🦋','פַּרְפַּר')">
+            <span class="ico">🦋</span><span class="nm">פַּרְפַּר</span>
         </div>
-        <div class="animal-option" onclick="chooseAnimal('🐰','אַרְנָב')">
-            <span class="aico">🐰</span><span class="aname">אַרְנָב</span>
+        <div class="animal-btn" onclick="chooseAnimal('🐰','אַרְנָב')">
+            <span class="ico">🐰</span><span class="nm">אַרְנָב</span>
         </div>
-        <div class="animal-option" onclick="chooseAnimal('🦄','חַד-קֶרֶן')">
-            <span class="aico">🦄</span><span class="aname">חַד-קֶרֶן</span>
+        <div class="animal-btn" onclick="chooseAnimal('🦄','חַד-קֶרֶן')">
+            <span class="ico">🦄</span><span class="nm">חַד-קֶרֶן</span>
         </div>
     </div>
 </div>
 
 <!-- ══ SCREEN 2: GAME ══════════════════════════════════ -->
 <div id="screen-game" class="screen hidden">
+
     <div id="story-panel">
+        <a href="../index.html" class="back-btn" title="חזרה">🏠</a>
         <div id="story-label">📖 הסיפור מתגלה...</div>
-        <div id="story-text"></div>
+        <div id="story-text"> </div>
     </div>
-    <div id="prog-bar"></div>
+
+    <div id="prog-row"></div>
 
     <div id="play-area">
-        <div id="stars-layer"></div>
-        <a href="../index.html" class="back-btn" title="חזרה">🏠</a>
-
+        <!-- stars injected by JS -->
         <div id="animal-wrap">
             <span id="animal-char">🐸</span>
         </div>
-
         <div id="platform">
+            <div id="platform-label">קְרָאִי אֶת הַמִּלָּה 👇</div>
             <div id="word-display"></div>
-            <div id="word-hint">קְרָאִי אֶת הַמִּלָּה וּלְחַצִי קָפוֹץ! 👇</div>
         </div>
-
-        <div id="danger-wrap"><div id="danger-fill"></div></div>
+        <div id="danger-strip"><div id="danger-fill"></div></div>
     </div>
 
     <button id="jump-btn" onclick="doJump()">🦘 קָפוֹץ!</button>
@@ -325,11 +324,11 @@
     <p class="sub">קָרָאתְ אֶת כָּל הַמִּלִּים וּבָנִיתְ סִיפּוּר!</p>
     <div id="story-card"></div>
     <div id="reveal-animal"></div>
-    <button id="play-again-btn" onclick="restartGame()">🔄 שַׂחֲקִי שׁוּב!</button>
+    <button id="again-btn" onclick="restartGame()">🔄 שַׂחֲקִי שׁוּב!</button>
 </div>
 
 <script>
-// ── STORY DATA ─────────────────────────────────────────
+// ── DATA ────────────────────────────────────────────────
 const CHUNKS = [
     "פַּעַם הָיְתָה",
     "נְסִיכָה קְטַנָּה",
@@ -357,244 +356,274 @@ const STORY_LINES = [
 
 // ── STATE ───────────────────────────────────────────────
 let chosenAnimal = '🐸';
-let chunkIdx = 0;
-let isJumping = false;
-let gameActive = false;
-let riseRAF = null;
-let platformBottom = -100; // px from bottom of play-area
-let dangerPct = 0;
+let idx = 0;
+let jumping = false;
+let active = false;
+let rafId = null;
+// These are measured once per presentChunk call:
+let riseStart, riseFrom, riseTo, riseDuration;
 
-// ── STARS ───────────────────────────────────────────────
+// ── BUILD STARS ─────────────────────────────────────────
 (function buildStars() {
-    const layer = document.getElementById('stars-layer');
-    for (let i = 0; i < 65; i++) {
+    const area = document.getElementById('play-area');
+    for (let i = 0; i < 70; i++) {
         const s = document.createElement('div');
-        s.className = 'star-bg';
-        const sz = Math.random() * 3.5 + 1;
-        s.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${Math.random()*2+1.4}s;animation-delay:${Math.random()*2.5}s;`;
-        layer.appendChild(s);
+        s.className = 'star';
+        const sz = Math.random() * 3 + 1;
+        s.style.cssText =
+            `width:${sz}px;height:${sz}px;` +
+            `left:${Math.random()*100}%;top:${Math.random()*100}%;` +
+            `animation-duration:${(Math.random()*1.8+1.2).toFixed(2)}s;` +
+            `animation-delay:${(Math.random()*2.5).toFixed(2)}s;`;
+        area.appendChild(s);
     }
 })();
 
 // ── CHOOSE ANIMAL ───────────────────────────────────────
-function chooseAnimal(emoji, name) {
+function chooseAnimal(emoji) {
     chosenAnimal = emoji;
     document.getElementById('animal-char').textContent = emoji;
     document.getElementById('reveal-animal').textContent = emoji;
     showScreen('screen-game');
-    startGame();
+    // Small delay so the screen is visible and laid out before we measure
+    requestAnimationFrame(() => requestAnimationFrame(startGame));
 }
 
 // ── START GAME ──────────────────────────────────────────
 function startGame() {
-    chunkIdx = 0; isJumping = false; gameActive = true;
+    idx = 0; jumping = false; active = true;
 
-    // Progress dots
-    const bar = document.getElementById('prog-bar');
-    bar.innerHTML = '';
-    CHUNKS.forEach((_, i) => {
-        const d = document.createElement('div');
-        d.className = 'pdot'; d.id = `pd${i}`;
-        bar.appendChild(d);
-    });
-
-    renderStoryText();
-    presentChunk();
-}
-
-// ── PRESENT NEXT CHUNK ──────────────────────────────────
-function presentChunk() {
-    if (chunkIdx >= CHUNKS.length) { endGame(); return; }
-
-    const chunk = CHUNKS[chunkIdx];
-    document.getElementById('word-display').textContent = chunk;
-    document.getElementById('word-hint').style.display = chunkIdx === 0 ? 'block' : 'none';
-    document.getElementById('jump-btn').classList.remove('off');
-
-    // Platform: reset below screen
-    const platform = document.getElementById('platform');
-    platformBottom = -(platform.offsetHeight + 10);
-    platform.style.bottom = platformBottom + 'px';
-    dangerPct = 0;
-    document.getElementById('danger-fill').style.width = '0%';
-
-    // Rise speed: 3.8s for chunk 0, down to 2.4s by end
-    const totalMs = Math.max(2400, 3800 - chunkIdx * 110);
+    // Position animal: bottom edge at 52% of play-area height
     const playArea = document.getElementById('play-area');
     const playH = playArea.offsetHeight;
     const animalWrap = document.getElementById('animal-wrap');
-    const animalY = animalWrap.offsetTop + animalWrap.offsetHeight; // bottom of animal
-    const targetBottom = playH - animalY - 10; // platform top just reaches animal feet
+    const animalH = document.getElementById('animal-char').offsetHeight;
+    const animalBottomEdgePx = playH * 0.52; // 52% from bottom
+    // bottom CSS positions the element's bottom edge
+    animalWrap.style.bottom = animalBottomEdgePx + 'px';
+    animalWrap.style.left = '50%';
+    animalWrap.style.transform = 'translateX(-50%)';
 
-    const startBottom = platformBottom;
-    const startTime = performance.now();
+    // Build progress dots
+    const row = document.getElementById('prog-row');
+    row.innerHTML = '';
+    CHUNKS.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = 'dot'; d.id = `d${i}`;
+        row.appendChild(d);
+    });
 
-    function rise(now) {
-        if (!gameActive || isJumping) return;
-        const elapsed = now - startTime;
-        const progress = Math.min(elapsed / totalMs, 1);
-        platformBottom = startBottom + (targetBottom - startBottom) * progress;
-        platform.style.bottom = platformBottom + 'px';
-        dangerPct = progress * 100;
-        document.getElementById('danger-fill').style.width = dangerPct + '%';
+    updateStoryPanel();
+    presentChunk();
+}
 
-        if (progress < 1) {
-            riseRAF = requestAnimationFrame(rise);
-        } else {
-            // Reached the animal — auto-jump (gentle for kids)
-            doJump(true);
-        }
+// ── PRESENT CHUNK ───────────────────────────────────────
+function presentChunk() {
+    if (idx >= CHUNKS.length) { endGame(); return; }
+
+    const chunk = CHUNKS[idx];
+    document.getElementById('word-display').textContent = chunk;
+
+    // Show the "read this" label only for the first word
+    document.getElementById('platform-label').style.display = idx === 0 ? 'block' : 'none';
+
+    // Measure layout
+    const playArea  = document.getElementById('play-area');
+    const platform  = document.getElementById('platform');
+    const animalWrap = document.getElementById('animal-wrap');
+
+    const playH         = playArea.offsetHeight;
+    const platH         = platform.offsetHeight;
+    const animalBottomPx = parseFloat(animalWrap.style.bottom); // 52% of playH
+
+    // FIX: target = platform's bottom edge so that platform's TOP touches animal's BOTTOM
+    // platform_top = bottom + height  →  we want  bottom + height = animalBottomPx
+    // so: bottom = animalBottomPx - height
+    const target = animalBottomPx - platH - 2; // -2px so it just kisses the animal's feet
+
+    // Reset platform to off-screen below
+    platform.style.transition = 'none';
+    platform.style.bottom = '-200px';
+    document.getElementById('danger-fill').style.width = '0%';
+
+    // Speed: 3.8s for first chunk, down to 2.4s
+    const dur = Math.max(2400, 3800 - idx * 110);
+
+    riseFrom     = -200;
+    riseTo       = target;
+    riseDuration = dur;
+    riseStart    = null; // will be set on first RAF
+
+    // Kick off the rise on next paint
+    cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(riseTick);
+}
+
+// ── RISE ANIMATION (RAF) ────────────────────────────────
+function riseTick(now) {
+    if (!active || jumping) return;
+    if (!riseStart) riseStart = now;
+
+    const elapsed  = now - riseStart;
+    const progress = Math.min(elapsed / riseDuration, 1);
+    const current  = riseFrom + (riseTo - riseFrom) * progress;
+
+    document.getElementById('platform').style.bottom = current + 'px';
+    document.getElementById('danger-fill').style.width = (progress * 100) + '%';
+
+    if (progress < 1) {
+        rafId = requestAnimationFrame(riseTick);
+    } else {
+        // Platform reached — auto-collect (be gentle for a 6-year-old)
+        doJump();
     }
-    riseRAF = requestAnimationFrame(rise);
 }
 
 // ── JUMP ────────────────────────────────────────────────
-function doJump(auto = false) {
-    if (isJumping || !gameActive) return;
-    isJumping = true;
-    cancelAnimationFrame(riseRAF);
-    document.getElementById('jump-btn').classList.add('off');
+function doJump() {
+    if (jumping || !active) return;
+    jumping = true;
 
-    // Mark collected
-    document.getElementById(`pd${chunkIdx}`).classList.add('done');
-    spawnCollectAnim(CHUNKS[chunkIdx]);
+    cancelAnimationFrame(rafId);
 
-    // Slide platform down
+    // Collect this chunk
+    document.getElementById(`d${idx}`).classList.add('lit');
+    spawnWordBurst(CHUNKS[idx]);
+    idx++;
+    updateStoryPanel();
+
+    // Slide platform back down quickly
     const platform = document.getElementById('platform');
-    platform.style.transition = 'bottom 0.35s ease-in';
-    platform.style.bottom = (-(platform.offsetHeight + 20)) + 'px';
-    setTimeout(() => { platform.style.transition = ''; }, 400);
+    platform.style.transition = 'bottom 0.4s ease-in';
+    platform.style.bottom = '-200px';
+    setTimeout(() => { platform.style.transition = 'none'; }, 420);
 
-    // Jump animation on animal
-    const animalEl = document.getElementById('animal-char');
-    animalEl.style.animation = 'none';
-    void animalEl.offsetWidth;
-    animalEl.style.animation = 'do-jump 0.65s cubic-bezier(0.15,0.85,0.45,1.2) forwards';
-
-    chunkIdx++;
-    renderStoryText();
+    // Animal jump animation
+    const char = document.getElementById('animal-char');
+    char.style.animation = 'none';
+    void char.offsetWidth; // force reflow
+    char.style.animation = 'do-jump 0.6s cubic-bezier(0.15,0.88,0.45,1.1) forwards';
 
     setTimeout(() => {
-        animalEl.style.animation = '';
-        void animalEl.offsetWidth;
-        animalEl.style.animation = 'bob 1.8s ease-in-out infinite';
-        isJumping = false;
-        if (chunkIdx < CHUNKS.length) {
-            setTimeout(presentChunk, 350);
+        // Restore bob animation
+        char.style.animation = 'none';
+        void char.offsetWidth;
+        char.style.animation = 'bob 1.9s ease-in-out infinite';
+        jumping = false;
+
+        if (idx < CHUNKS.length) {
+            setTimeout(presentChunk, 300);
         } else {
-            setTimeout(endGame, 500);
+            setTimeout(endGame, 400);
         }
-    }, 680);
+    }, 650);
 }
 
-// ── STORY TEXT (top panel) ──────────────────────────────
-function renderStoryText() {
-    const container = document.getElementById('story-text');
-    const parts = CHUNKS.map((c, i) => {
-        if (i < chunkIdx)
-            return `<span class="sw-done">${c}</span>`;
-        else
-            return `<span class="sw-blank">∙∙∙</span>`;
-    });
-    container.innerHTML = parts.join(' ');
-    // Scroll to keep latest word in view
-    container.scrollLeft = 0;
+// ── STORY PANEL ─────────────────────────────────────────
+function updateStoryPanel() {
+    const collected = CHUNKS.slice(0, idx);
+    const remaining = CHUNKS.length - idx;
+    document.getElementById('story-text').textContent =
+        collected.length ? collected.join(' ') : ' ';
+    // Show dot hints for remaining
+    document.getElementById('story-label').textContent =
+        remaining > 0
+            ? `📖 נשארו עוד ${remaining} מילות סיפור...`
+            : '📖 הסיפור מוכן!';
 }
 
-// ── COLLECT ANIMATION ───────────────────────────────────
-function spawnCollectAnim(text) {
-    const platform = document.getElementById('platform');
-    const rect = platform.getBoundingClientRect();
+// ── WORD BURST ANIMATION ─────────────────────────────────
+function spawnWordBurst(text) {
+    const plat = document.getElementById('platform');
+    const r = plat.getBoundingClientRect();
     const el = document.createElement('div');
-    el.className = 'collect-anim';
+    el.className = 'word-burst';
     el.textContent = '⭐ ' + text;
-    el.style.left = (rect.left + rect.width / 2 - 80) + 'px';
-    el.style.top  = rect.top + 'px';
+    el.style.left = Math.max(4, r.left + r.width / 2 - 90) + 'px';
+    el.style.top  = (r.top + 10) + 'px';
     document.body.appendChild(el);
-    setTimeout(() => el.remove(), 900);
+    setTimeout(() => el.remove(), 950);
 }
 
 // ── END GAME ────────────────────────────────────────────
 function endGame() {
-    gameActive = false;
-    cancelAnimationFrame(riseRAF);
+    active = false;
+    cancelAnimationFrame(rafId);
     showScreen('screen-story');
-    buildReveal();
+    buildStoryReveal();
     launchConfetti();
 }
 
-function buildReveal() {
+function buildStoryReveal() {
     const card = document.getElementById('story-card');
     card.innerHTML = '';
     STORY_LINES.forEach((line, i) => {
         const p = document.createElement('p');
+        p.className = 'story-line';
         p.textContent = line;
-        p.style.animationDelay = `${i * 0.35}s`;
+        p.style.animationDelay = (i * 0.38) + 's';
         card.appendChild(p);
     });
 }
 
-// ── CONFETTI ────────────────────────────────────────────
-const confCvs = document.getElementById('confetti-canvas');
-const confCtx = confCvs.getContext('2d');
-let pieces = []; let confActive = false;
+// ── CONFETTI ─────────────────────────────────────────────
+const cvs = document.getElementById('confetti');
+const ctx = cvs.getContext('2d');
+let pieces = [], confGoing = false;
 
-function resizeConf() { confCvs.width = innerWidth; confCvs.height = innerHeight; }
-window.addEventListener('resize', resizeConf);
-resizeConf();
+function resizeCvs() { cvs.width = innerWidth; cvs.height = innerHeight; }
+window.addEventListener('resize', resizeCvs);
+resizeCvs();
 
 function launchConfetti() {
-    pieces = [];
-    const cols = ['#f48fb1','#ce93d8','#90caf9','#a5d6a7','#fff59d','#ffab91','#ffd700'];
-    for (let i = 0; i < 130; i++) {
-        pieces.push({
-            x: Math.random() * confCvs.width,
-            y: -20 - Math.random() * 250,
-            w: Math.random() * 11 + 5, h: Math.random() * 7 + 3,
-            color: cols[Math.floor(Math.random() * cols.length)],
-            vx: (Math.random() - 0.5) * 6,
-            vy: Math.random() * 5 + 2,
-            rot: Math.random() * 360,
-            rotV: (Math.random() - 0.5) * 11,
-            life: 1
-        });
-    }
-    if (!confActive) { confActive = true; animConf(); }
+    const cols = ['#f48fb1','#ce93d8','#90caf9','#a5d6a7','#fff59d','#ffcc02','#80deea'];
+    pieces = Array.from({length: 130}, () => ({
+        x: Math.random() * cvs.width,
+        y: -10 - Math.random() * 250,
+        w: Math.random() * 11 + 5,
+        h: Math.random() * 6 + 3,
+        c: cols[Math.floor(Math.random() * cols.length)],
+        vx: (Math.random() - 0.5) * 6,
+        vy: Math.random() * 5 + 2,
+        r: Math.random() * 360,
+        rv: (Math.random() - 0.5) * 11,
+        a: 1
+    }));
+    if (!confGoing) { confGoing = true; confFrame(); }
 }
-
-function animConf() {
-    confCtx.clearRect(0, 0, confCvs.width, confCvs.height);
+function confFrame() {
+    ctx.clearRect(0, 0, cvs.width, cvs.height);
     pieces.forEach(p => {
-        p.x += p.vx; p.y += p.vy; p.vy += 0.13;
-        p.rot += p.rotV; p.life -= 0.006;
-        if (p.life > 0) {
-            confCtx.save();
-            confCtx.translate(p.x, p.y);
-            confCtx.rotate(p.rot * Math.PI / 180);
-            confCtx.globalAlpha = p.life;
-            confCtx.fillStyle = p.color;
-            confCtx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
-            confCtx.restore();
+        p.x += p.vx; p.y += p.vy; p.vy += 0.12;
+        p.r += p.rv; p.a -= 0.006;
+        if (p.a > 0) {
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.r * Math.PI / 180);
+            ctx.globalAlpha = p.a;
+            ctx.fillStyle = p.c;
+            ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+            ctx.restore();
         }
     });
-    pieces = pieces.filter(p => p.life > 0);
-    if (pieces.length > 0) requestAnimationFrame(animConf);
-    else { confActive = false; confCtx.clearRect(0,0,confCvs.width,confCvs.height); }
+    pieces = pieces.filter(p => p.a > 0);
+    if (pieces.length) requestAnimationFrame(confFrame);
+    else { confGoing = false; ctx.clearRect(0, 0, cvs.width, cvs.height); }
 }
 
-// ── HELPERS ─────────────────────────────────────────────
+// ── HELPERS ──────────────────────────────────────────────
 function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
     document.getElementById(id).classList.remove('hidden');
 }
-
 function restartGame() { showScreen('screen-choose'); }
 
-// Keyboard: Space / ArrowUp = jump
+// Tap anywhere in play-area = jump
+document.getElementById('play-area').addEventListener('click', doJump);
+
+// Keyboard support
 document.addEventListener('keydown', e => {
-    if (e.code === 'Space' || e.code === 'ArrowUp') {
-        e.preventDefault(); doJump();
-    }
+    if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); doJump(); }
 });
 </script>
 </body>
