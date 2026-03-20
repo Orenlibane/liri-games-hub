@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>לירי גיימס - מרכז המשחקים</title>
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#764ba2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="לירי גיימס">
+    <link rel="apple-touch-icon" href="./icon-192.svg">
     <style>
         * {
             margin: 0;
@@ -361,6 +366,15 @@
             star.style.fontSize = (Math.random() * 15 + 8) + 'px';
             star.style.animationDelay = (Math.random() * 2) + 's';
             starsContainer.appendChild(star);
+        }
+    </script>
+    <script>
+        // Register service worker for offline support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .catch(err => console.log('SW registration failed:', err));
+            });
         }
     </script>
 </body>
