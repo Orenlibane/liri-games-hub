@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>קוראים עם לירי! 📖</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fce4ec 0%, #e1bee7 30%, #bbdefb 70%, #f3e5f5 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Floating hearts background */
+        .bg-decor {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-decor span {
+            position: absolute;
+            animation: float-around linear infinite;
+            opacity: 0.2;
+            font-size: 30px;
+        }
+
+        @keyframes float-around {
+            0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10%  { opacity: 0.2; }
+            90%  { opacity: 0.2; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Back button */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(255,255,255,0.85);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        /* Main container */
+        .game-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #7b1fa2;
+            text-shadow: 2px 2px 4px rgba(123,31,162,0.15);
+            animation: bounce-in 0.6s ease-out;
+        }
+
+        @keyframes bounce-in {
+            0%   { transform: scale(0.5); opacity: 0; }
+            60%  { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Score display */
+        .score-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.8);
+            padding: 10px 28px;
+            border-radius: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            font-size: 1.3em;
+            color: #6a1b9a;
+            font-weight: bold;
+        }
+
+        .score-bar .star-icon {
+            font-size: 1.4em;
+            animation: pulse-star 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse-star {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Word card */
+        .word-card {
+            background: rgba(255,255,255,0.92);
+            border-radius: 30px;
+            padding: 35px 30px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            border: 3px solid #e1bee7;
+            margin-bottom: 30px;
+            transition: border-color 0.3s;
+        }
+
+        .word-card-label {
+            font-size: 1em;
+            color: #ab47bc;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .hebrew-word {
+            font-size: 4.5em;
+            color: #4a148c;
+            line-height: 1.4;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            direction: rtl;
+            unicode-bidi: bidi-override;
+        }
+
+        /* Emoji choices */
+        .choices {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .choice-btn {
+            width: 130px;
+            height: 130px;
+            border-radius: 25px;
+            border: 4px solid #e1bee7;
+            background: rgba(255,255,255,0.9);
+            font-size: 60px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+        }
+
+        .choice-btn:hover {
+            transform: scale(1.08);
+            border-color: #ab47bc;
+            box-shadow: 0 8px 25px rgba(171,71,188,0.2);
+        }
+
+        .choice-btn:active {
+            transform: scale(0.95);
+        }
+
+        .choice-btn.correct {
+            border-color: #66bb6a;
+            background: #e8f5e9;
+            animation: pop 0.4s ease-out;
+        }
+
+        .choice-btn.wrong {
+            animation: shake 0.5s ease-in-out;
+            border-color: #ef9a9a;
+        }
+
+        @keyframes pop {
+            0%   { transform: scale(1); }
+            50%  { transform: scale(1.2); }
+            100% { transform: scale(1.05); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%      { transform: translateX(-12px); }
+            40%      { transform: translateX(12px); }
+            60%      { transform: translateX(-8px); }
+            80%      { transform: translateX(8px); }
+        }
+
+        /* Feedback messages */
+        .feedback {
+            text-align: center;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .feedback-msg {
+            font-size: 1.8em;
+            font-weight: bold;
+            animation: feedback-pop 0.4s ease-out;
+        }
+
+        .feedback-msg.success {
+            color: #2e7d32;
+        }
+
+        .feedback-msg.retry {
+            color: #e65100;
+        }
+
+        @keyframes feedback-pop {
+            0%   { transform: scale(0); opacity: 0; }
+            60%  { transform: scale(1.15); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Next button */
+        .next-btn {
+            background: linear-gradient(135deg, #ab47bc, #7b1fa2);
+            color: #fff;
+            border: none;
+            padding: 16px 50px;
+            border-radius: 30px;
+            font-size: 1.4em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(123,31,162,0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: none;
+        }
+
+        .next-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(123,31,162,0.4);
+        }
+
+        .next-btn.visible {
+            display: inline-block;
+            animation: feedback-pop 0.3s ease-out;
+        }
+
+        /* Confetti canvas */
+        #confetti-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* Star burst animation for correct answers */
+        .star-burst {
+            position: fixed;
+            pointer-events: none;
+            z-index: 999;
+            animation: star-fly 1s ease-out forwards;
+            font-size: 2em;
+        }
+
+        @keyframes star-fly {
+            0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+            100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.3); }
+        }
+
+        /* Streak display */
+        .streak {
+            font-size: 0.85em;
+            color: #ab47bc;
+            margin-top: 5px;
+            min-height: 22px;
+        }
+
+        @media (max-width: 480px) {
+            .hebrew-word { font-size: 3.2em; }
+            .choice-btn { width: 100px; height: 100px; font-size: 45px; }
+            .header h1 { font-size: 2em; }
+        }
+    </style>
+</head>
+<body>
+
+<a href="../index.html" class="back-btn" title="חזרה לתפריט">🏠</a>
+
+<div class="bg-decor" id="bgDecor"></div>
+<canvas id="confetti-canvas"></canvas>
+
+<div class="game-container">
+    <div class="header">
+        <h1>📖 קוראים עם לירי! 📖</h1>
+    </div>
+
+    <div class="score-bar">
+        <span class="star-icon">⭐</span>
+        <span id="score">0</span>
+        <span>כוכבים</span>
+    </div>
+
+    <div class="word-card">
+        <div class="word-card-label">מה המילה הזו? 🤔</div>
+        <div class="hebrew-word" id="hebrewWord"></div>
+    </div>
+
+    <div class="choices" id="choices"></div>
+
+    <div class="feedback" id="feedback"></div>
+    <div class="streak" id="streak"></div>
+
+    <button class="next-btn" id="nextBtn" onclick="nextWord()">מילה הבאה ➜</button>
+</div>
+
+<script>
+const words = [
+  { word: "חָתוּל", emoji: "🐱" },
+  { word: "חַד-קֶרֶן", emoji: "🦄" },
+  { word: "כֶּתֶר", emoji: "👑" },
+  { word: "נְסִיכָה", emoji: "👸" },
+  { word: "פֵיָה", emoji: "🧚‍♀️" },
+  { word: "קֶסֶם", emoji: "🪄" },
+  { word: "אַרְמוֹן", emoji: "🏰" },
+  { word: "בַּת-יָם", emoji: "🧜‍♀️" },
+  { word: "כֶּלֶב", emoji: "🐶" },
+  { word: "אַרְנָב", emoji: "🐰" },
+  { word: "פַּרְפַּר", emoji: "🦋" },
+  { word: "צִפּוֹר", emoji: "🐦" },
+  { word: "דָּג", emoji: "🐟" },
+  { word: "דּוֹב", emoji: "🐻" },
+  { word: "דִּינוֹזָאוּר", emoji: "🦖" },
+  { word: "צָב", emoji: "🐢" },
+  { word: "פֶּרַח", emoji: "🌸" },
+  { word: "קֶשֶׁת", emoji: "🌈" },
+  { word: "כּוֹכָב", emoji: "⭐" },
+  { word: "שֶׁמֶשׁ", emoji: "☀️" },
+  { word: "יָרֵחַ", emoji: "🌙" },
+  { word: "לֵב", emoji: "❤️" },
+  { word: "עָנָן", emoji: "☁️" },
+  { word: "עֵץ", emoji: "🌳" },
+  { word: "עוּגָה", emoji: "🎂" },
+  { word: "גְּלִידָה", emoji: "🍦" },
+  { word: "סוּכָּרִיָּה", emoji: "🍬" },
+  { word: "שׁוֹקוֹלָד", emoji: "🍫" },
+  { word: "תַּפּוּחַ", emoji: "🍎" },
+  { word: "תּוּת", emoji: "🍓" },
+  { word: "אֲבַטִּיחַ", emoji: "🍉" },
+  { word: "בַּיִת", emoji: "🏠" },
+  { word: "סֵפֶר", emoji: "📖" },
+  { word: "בָּלוֹן", emoji: "🎈" },
+  { word: "מַתָּנָה", emoji: "🎁" },
+  { word: "בּוּבָּה", emoji: "🧸" },
+  { word: "שִׂמְלָה", emoji: "👗" },
+  { word: "תִּיק", emoji: "🎒" },
+  { word: "מִטָּה", emoji: "🛌" },
+  { word: "כַּדּוּר", emoji: "⚽" }
+];
+
+let score = 0;
+let streak = 0;
+let currentWord = null;
+let answered = false;
+
+// Shuffle helper
+function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+// Pick a new word
+function pickWord() {
+    answered = false;
+    document.getElementById('feedback').innerHTML = '';
+    document.getElementById('streak').textContent = streak > 1 ? `🔥 רצף של ${streak}!` : '';
+    document.getElementById('nextBtn').classList.remove('visible');
+
+    // Pick random word
+    currentWord = words[Math.floor(Math.random() * words.length)];
+    document.getElementById('hebrewWord').textContent = currentWord.word;
+
+    // Pick 2 random wrong emojis
+    const otherEmojis = words
+        .filter(w => w.emoji !== currentWord.emoji)
+        .map(w => w.emoji);
+    const shuffledOthers = shuffle(otherEmojis);
+    const wrongChoices = shuffledOthers.slice(0, 2);
+
+    // Create 3 shuffled choices
+    const choices = shuffle([currentWord.emoji, ...wrongChoices]);
+
+    const container = document.getElementById('choices');
+    container.innerHTML = '';
+    choices.forEach(emoji => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = emoji;
+        btn.onclick = () => handleChoice(btn, emoji);
+        container.appendChild(btn);
+    });
+}
+
+// Handle a choice
+function handleChoice(btn, emoji) {
+    if (answered) return;
+
+    if (emoji === currentWord.emoji) {
+        // Correct!
+        answered = true;
+        streak++;
+        score++;
+        document.getElementById('score').textContent = score;
+        btn.classList.add('correct');
+        document.getElementById('feedback').innerHTML =
+            '<div class="feedback-msg success">🎉 כל הכבוד לירי! 🎉</div>';
+        document.getElementById('streak').textContent = streak > 1 ? `🔥 רצף של ${streak}!` : '';
+        document.getElementById('nextBtn').classList.add('visible');
+        launchConfetti();
+        spawnStarBurst(btn);
+    } else {
+        // Wrong
+        btn.classList.add('wrong');
+        streak = 0;
+        document.getElementById('streak').textContent = '';
+        document.getElementById('feedback').innerHTML =
+            '<div class="feedback-msg retry">🙈 נסי שוב!</div>';
+        // Remove wrong class after animation
+        setTimeout(() => btn.classList.remove('wrong'), 500);
+    }
+}
+
+function nextWord() {
+    pickWord();
+}
+
+// ============ Confetti ============
+const canvas = document.getElementById('confetti-canvas');
+const ctx = canvas.getContext('2d');
+let confettiPieces = [];
+let confettiAnimating = false;
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function launchConfetti() {
+    confettiPieces = [];
+    const colors = ['#f48fb1','#ce93d8','#90caf9','#a5d6a7','#fff59d','#ffab91','#80deea'];
+    for (let i = 0; i < 80; i++) {
+        confettiPieces.push({
+            x: Math.random() * canvas.width,
+            y: -20 - Math.random() * 100,
+            w: Math.random() * 10 + 5,
+            h: Math.random() * 6 + 3,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            vx: (Math.random() - 0.5) * 6,
+            vy: Math.random() * 4 + 2,
+            rotation: Math.random() * 360,
+            rotSpeed: (Math.random() - 0.5) * 10,
+            life: 1
+        });
+    }
+    if (!confettiAnimating) {
+        confettiAnimating = true;
+        animateConfetti();
+    }
+}
+
+function animateConfetti() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    confettiPieces.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.1;
+        p.rotation += p.rotSpeed;
+        p.life -= 0.008;
+        if (p.life > 0) {
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.globalAlpha = p.life;
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            ctx.restore();
+        }
+    });
+    confettiPieces = confettiPieces.filter(p => p.life > 0);
+    if (confettiPieces.length > 0) {
+        requestAnimationFrame(animateConfetti);
+    } else {
+        confettiAnimating = false;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+}
+
+// Star burst from correct button
+function spawnStarBurst(btn) {
+    const rect = btn.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const symbols = ['⭐','✨','🌟','💖','💫'];
+    for (let i = 0; i < 8; i++) {
+        const el = document.createElement('div');
+        el.className = 'star-burst';
+        el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        const angle = (Math.PI * 2 * i) / 8;
+        const dist = 60 + Math.random() * 60;
+        el.style.left = cx + 'px';
+        el.style.top = cy + 'px';
+        el.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+        el.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1000);
+    }
+}
+
+// ============ Background decor ============
+(function createBgDecor() {
+    const container = document.getElementById('bgDecor');
+    const items = ['💜','🌸','✨','💖','⭐','🦋','🌈','🪄'];
+    for (let i = 0; i < 25; i++) {
+        const span = document.createElement('span');
+        span.textContent = items[Math.floor(Math.random() * items.length)];
+        span.style.left = Math.random() * 100 + '%';
+        span.style.fontSize = (Math.random() * 20 + 16) + 'px';
+        span.style.animationDuration = (Math.random() * 12 + 10) + 's';
+        span.style.animationDelay = (Math.random() * 12) + 's';
+        container.appendChild(span);
+    }
+})();
+
+// Start!
+pickWord();
+</script>
+</body>
+</html>
