@@ -1,0 +1,45 @@
+{
+  "document_title": "DungeonDelve Software Design Document",
+  "generation_date": "2026-03-21",
+  "metrics": {
+    "output_chars": 21202,
+    "tool_calls_made": 3,
+    "sections_included": 9,
+    "sprints_planned": 7,
+    "total_development_weeks": 22,
+    "tasks_per_sprint": {
+      "sprint_0": 5,
+      "sprint_1": 5,
+      "sprint_2": 5,
+      "sprint_3": 5,
+      "sprint_4": 5,
+      "sprint_5": 5,
+      "sprint_6": 5,
+      "sprint_7": 4
+    },
+    "total_major_tasks": 39
+  },
+  "document_structure": {
+    "architecture_overview": true,
+    "detailed_system_design": true,
+    "user_interface_design": true,
+    "technical_implementation": true,
+    "development_tasks_by_sprint": true,
+    "risk_assessment": true,
+    "success_metrics": true,
+    "scriptable_object_templates": true,
+    "revision_history": true
+  },
+  "key_deliverables": [
+    "Sprint 0: Basic framework and menu system",
+    "Sprint 1: Procedural dungeon and movement",
+    "Sprint 2: Turn-based combat system",
+    "Sprint 3: All class abilities and balancing",
+    "Sprint 4: Boss encounters and meta-progression",
+    "Sprint 5: Unlockable content and replayability",
+    "Sprint 6: Polish and optimization",
+    "Sprint 7: Platform optimization and release"
+  ],
+  "estimated_total_effort": "22 weeks / 5.5 months",
+  "target_mvp_completion": "End of Sprint 4 (Week 14)"
+}

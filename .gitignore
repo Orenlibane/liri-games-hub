@@ -137,3 +137,30 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+# --- added by backup: never commit secrets/build artifacts ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*_rsa
+*_rsa.pub
+token*.json
+*credentials*.json
+*serviceaccount*.json
+secrets/
+node_modules/
+dist/
+build/
+.next/
+.nuxt/
+.angular/
+.nx/cache
+__pycache__/
+*.pyc
+.venv/
+venv/
+.DS_Store
+.vercel
+# real data files (keep synthetic seeds explicitly if needed)
+**/data.json

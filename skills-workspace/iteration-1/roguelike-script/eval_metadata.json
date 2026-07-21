@@ -1,0 +1,6 @@
+{
+  "eval_id": 3,
+  "eval_name": "roguelike-script",
+  "prompt": "Generate a complete Unity C# TurnManager script for the roguelike dungeon crawler.",
+  "assertions": []
+}

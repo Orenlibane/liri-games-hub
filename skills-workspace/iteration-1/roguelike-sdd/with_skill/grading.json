@@ -1,0 +1,17 @@
+{
+  "expectations": [
+    {"text": "Output is a markdown file saved to the outputs folder", "passed": true, "evidence": "game_sdd.md confirmed at 62,007 characters"},
+    {"text": "SDD contains at least 3 named sprints", "passed": true, "evidence": "25 hits for 'Sprint' — 6 named sprints (Sprint 1: Project Skeleton, Sprint 2: Dungeon, Sprint 3: Combat, Sprint 4: Classes, Sprint 5: Meta-progression, Sprint 6: Polish)"},
+    {"text": "Sprint 1 includes infrastructure tasks (project setup, Bootstrap scene, managers)", "passed": true, "evidence": "41 hits for Bootstrap/Assets/Scripts/Core paths. Sprint 1 covers project setup, GameManager, TurnManager, ScriptableObject definitions, MainMenu"},
+    {"text": "Each task specifies file paths to create or modify", "passed": true, "evidence": "41 path references (Assets/Scripts/Core, Assets/Scenes/Bootstrap, etc.) across tasks"},
+    {"text": "Each task includes implementation notes (not just a description)", "passed": true, "evidence": "Every task has an Implementation Notes section with Unity-specific guidance (FixedUpdate vs Update, RequireComponent, etc.)"},
+    {"text": "Each task has acceptance criteria checkboxes", "passed": true, "evidence": "116 checkbox entries (- [ ] pattern) distributed across all 32 tasks"},
+    {"text": "SDD includes a dependency graph showing task relationships", "passed": true, "evidence": "Dependency Graph section present with ASCII tree showing task relationships"},
+    {"text": "SDD includes a Post-MVP Backlog table", "passed": true, "evidence": "Post-MVP Backlog section present with markdown table of 15 backlog items"},
+    {"text": "Tasks map to features from the PRD (grid movement, turn resolution, combat are all present)", "passed": true, "evidence": "Grid movement, turn resolution, and combat each have dedicated tasks with acceptance criteria matching PRD 5.1"},
+    {"text": "Sprint ordering is logical: foundational tasks come before features that depend on them", "passed": true, "evidence": "Sprint 1 is infrastructure (GameManager, TurnManager, SOs), Sprint 2 is movement/dungeon, Sprint 3 is combat — correct dependency order"}
+  ],
+  "summary": {"passed": 10, "failed": 0, "total": 10, "pass_rate": 1.0},
+  "execution_metrics": {"tool_calls": {"Read": 2, "Write": 2, "Bash": 0}, "total_tool_calls": 4, "total_steps": 3, "files_created": ["game_sdd.md", "metrics.json"], "errors_encountered": 0, "output_chars": 62007, "transcript_chars": 0},
+  "timing": {"total_tokens": 44010, "duration_ms": 169986, "total_duration_seconds": 170.0}
+}

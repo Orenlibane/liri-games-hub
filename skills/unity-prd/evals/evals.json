@@ -1,0 +1,22 @@
+{
+  "skill_name": "unity-prd",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I want to build a roguelike dungeon crawler — procedurally generated dungeons, turn-based combat, pixel art. PC only. The player picks a class at the start (Warrior, Rogue, or Mage), finds items and equipment in dungeons, and fights through floors with a boss every 5 levels. Permadeath but with meta-progression unlocks between runs. Please create a full PRD for this game.",
+      "expected_output": "A complete markdown PRD covering: game overview, core mechanics (classes, combat, items, progression), full Unity technical architecture with MonoBehaviour/ScriptableObject design, milestones with MVP definition, and a SDD handoff section with feature breakdowns and system contracts.",
+      "files": [],
+      "expectations": [
+        "Output is a markdown file saved to the outputs folder",
+        "PRD contains a Game Overview section with elevator pitch, genre, and platform",
+        "PRD contains a Core Mechanics section covering the three classes, turn-based combat, and permadeath",
+        "PRD contains a Unity Technical Architecture section with MonoBehaviour class names and responsibilities",
+        "PRD contains at least one ScriptableObject design (e.g. for classes or items)",
+        "PRD contains a Milestones section with an MVP definition",
+        "PRD contains a SDD Handoff section (Section 5) with at least one Feature Breakdown entry",
+        "PRD contains system contracts with C# interface signatures in Section 5.2",
+        "Assumptions made by Claude are labeled as such in the document"
+      ]
+    }
+  ]
+}

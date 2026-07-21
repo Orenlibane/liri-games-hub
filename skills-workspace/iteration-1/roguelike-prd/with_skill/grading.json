@@ -1,0 +1,16 @@
+{
+  "expectations": [
+    {"text": "Output is a markdown file saved to the outputs folder", "passed": true, "evidence": "game_prd.md confirmed at 87,796 characters"},
+    {"text": "PRD contains a Game Overview section with elevator pitch, genre, and platform", "passed": true, "evidence": "Section 1 present with elevator pitch, genre/references, and PC platform target"},
+    {"text": "PRD contains a Core Mechanics section covering the three classes, turn-based combat, and permadeath", "passed": true, "evidence": "Section 2 covers Warrior/Rogue/Mage classes, turn-based grid combat, and permadeath with meta-progression"},
+    {"text": "PRD contains a Unity Technical Architecture section with MonoBehaviour class names and responsibilities", "passed": true, "evidence": "Section 3.3 lists 8 key MonoBehaviours with responsibilities (GameManager, TurnManager, DungeonGenerator, PlayerController, EntityStats, EnemyAI, InventorySystem, ItemPickup)"},
+    {"text": "PRD contains at least one ScriptableObject design (e.g. for classes or items)", "passed": true, "evidence": "Section 3.4 contains 6 ScriptableObject types with fields and purposes (ClassDefinition, ItemData, EnemyConfig, MetaUnlock, etc.)"},
+    {"text": "PRD contains a Milestones section with an MVP definition", "passed": true, "evidence": "Section 4 present with MVP feature list and 4-phase development plan"},
+    {"text": "PRD contains a SDD Handoff section (Section 5) with at least one Feature Breakdown entry", "passed": true, "evidence": "Section 5.1 contains 22 detailed feature breakdowns with acceptance criteria"},
+    {"text": "PRD contains system contracts with C# interface signatures in Section 5.2", "passed": true, "evidence": "Section 5.2 contains 21 system contracts with valid C# method signatures and event declarations"},
+    {"text": "Assumptions made by Claude are labeled as such in the document", "passed": true, "evidence": "3 assumption labels found in document (⚠️ Assumption: prefix pattern used)"}
+  ],
+  "summary": {"passed": 9, "failed": 0, "total": 9, "pass_rate": 1.0},
+  "execution_metrics": {"tool_calls": {"Read": 2, "Write": 2, "Bash": 0}, "total_tool_calls": 4, "total_steps": 3, "files_created": ["game_prd.md", "metrics.json"], "errors_encountered": 0, "output_chars": 87796, "transcript_chars": 0},
+  "timing": {"total_tokens": 68071, "duration_ms": 602341, "total_duration_seconds": 602.3}
+}

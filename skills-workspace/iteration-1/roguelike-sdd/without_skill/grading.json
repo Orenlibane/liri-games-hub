@@ -1,0 +1,17 @@
+{
+  "expectations": [
+    {"text": "Output is a markdown file saved to the outputs folder", "passed": true, "evidence": "game_sdd.md confirmed at 21,202 characters"},
+    {"text": "SDD contains at least 3 named sprints", "passed": true, "evidence": "22 hits for 'Sprint' — 7 sprints (Sprint 0–6) present with names"},
+    {"text": "Sprint 1 includes infrastructure tasks (project setup, Bootstrap scene, managers)", "passed": false, "evidence": "0 hits for 'Bootstrap' or 'Assets/Scripts/Core'. Sprint 0 covers foundation but without specific Unity file paths or scene-level setup details"},
+    {"text": "Each task specifies file paths to create or modify", "passed": false, "evidence": "0 hits for 'Assets/' path references. Document describes tasks conceptually but doesn't list file paths"},
+    {"text": "Each task includes implementation notes (not just a description)", "passed": false, "evidence": "Only 3 hits for 'Implementation' (section headers). Tasks have descriptions but lack Unity-specific implementation guidance"},
+    {"text": "Each task has acceptance criteria checkboxes", "passed": false, "evidence": "0 hits for '- [ ]' checkbox pattern. Acceptance criteria not included per-task"},
+    {"text": "SDD includes a dependency graph showing task relationships", "passed": false, "evidence": "0 hits for 'Dependency Graph'. Document has risk assessment but no task dependency visualization"},
+    {"text": "SDD includes a Post-MVP Backlog table", "passed": false, "evidence": "Document ends at Sprint 6 (release prep) without a separate backlog table for deferred features"},
+    {"text": "Tasks map to features from the PRD (grid movement, turn resolution, combat are all present)", "passed": true, "evidence": "11 hits for 'Grid Movement', 'Turn Resolution', 'Combat' — PRD features are represented in sprint tasks"},
+    {"text": "Sprint ordering is logical: foundational tasks come before features that depend on them", "passed": true, "evidence": "Sprint 0=foundation, Sprint 1=dungeon gen, Sprint 2=combat — logical progression"}
+  ],
+  "summary": {"passed": 4, "failed": 6, "total": 10, "pass_rate": 0.40},
+  "execution_metrics": {"tool_calls": {"Read": 0, "Write": 2, "Bash": 0}, "total_tool_calls": 2, "total_steps": 2, "files_created": ["game_sdd.md", "metrics.json"], "errors_encountered": 0, "output_chars": 21202, "transcript_chars": 0},
+  "timing": {"total_tokens": 39434, "duration_ms": 79352, "total_duration_seconds": 79.4}
+}

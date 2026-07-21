@@ -1,0 +1,6 @@
+{
+  "eval_id": 2,
+  "eval_name": "roguelike-sdd",
+  "prompt": "Given the DungeonDelve PRD, generate a full SDD with ordered development tasks organized into sprints.",
+  "assertions": []
+}

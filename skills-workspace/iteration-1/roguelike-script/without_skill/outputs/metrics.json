@@ -1,0 +1,27 @@
+{
+  "tool_calls": {
+    "total": 4,
+    "breakdown": {
+      "bash": 2,
+      "write": 2
+    }
+  },
+  "output_files": {
+    "total_files": 2,
+    "files": [
+      {
+        "name": "Interfaces.cs",
+        "characters": 1709
+      },
+      {
+        "name": "TurnManager.cs",
+        "characters": 12849
+      }
+    ],
+    "total_characters": 14558
+  },
+  "target_unity_version": "2022 LTS",
+  "render_pipeline": "URP",
+  "input_system": "New Input System",
+  "game_type": "2D Roguelike Dungeon Crawler"
+}

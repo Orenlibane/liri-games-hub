@@ -1,0 +1,206 @@
+{
+  "metadata": {
+    "skill_name": "unity-game-skills",
+    "timestamp": "2026-03-21T00:00:00Z",
+    "evals_run": ["roguelike-prd", "roguelike-sdd", "roguelike-script"],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "eval_name": "roguelike-prd",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 9,
+        "failed": 0,
+        "total": 9,
+        "time_seconds": 602.3,
+        "tokens": 68071,
+        "tool_calls": 4,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Output is a markdown file saved to the outputs folder", "passed": true, "evidence": "game_prd.md confirmed at 87,796 characters"},
+        {"text": "PRD contains a Game Overview section with elevator pitch, genre, and platform", "passed": true, "evidence": "Section 1 present with full game overview"},
+        {"text": "PRD contains Core Mechanics covering three classes, turn-based combat, and permadeath", "passed": true, "evidence": "Section 2 covers all three classes and combat system"},
+        {"text": "PRD contains Unity Technical Architecture with MonoBehaviour class names", "passed": true, "evidence": "Section 3.3 lists 8 MonoBehaviours with responsibilities"},
+        {"text": "PRD contains at least one ScriptableObject design", "passed": true, "evidence": "Section 3.4 defines 6 ScriptableObject types"},
+        {"text": "PRD contains a Milestones section with an MVP definition", "passed": true, "evidence": "Section 4 with MVP feature list and 4-phase plan"},
+        {"text": "PRD contains a SDD Handoff section with at least one Feature Breakdown entry", "passed": true, "evidence": "Section 5.1 has 22 feature breakdowns"},
+        {"text": "PRD contains system contracts with C# interface signatures in Section 5.2", "passed": true, "evidence": "Section 5.2 has 21 system contracts with valid C# signatures"},
+        {"text": "Assumptions made by Claude are labeled as such", "passed": true, "evidence": "3 assumption labels found (⚠️ Assumption: prefix)"}
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "eval_name": "roguelike-prd",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.44,
+        "passed": 4,
+        "failed": 5,
+        "total": 9,
+        "time_seconds": 74.9,
+        "tokens": 29893,
+        "tool_calls": 2,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Output is a markdown file saved to the outputs folder", "passed": true, "evidence": "game_prd.md at 21,879 characters"},
+        {"text": "PRD contains a Game Overview section with elevator pitch, genre, and platform", "passed": true, "evidence": "Executive summary present"},
+        {"text": "PRD contains Core Mechanics covering three classes, turn-based combat, and permadeath", "passed": true, "evidence": "Classes and combat present"},
+        {"text": "PRD contains Unity Technical Architecture with MonoBehaviour class names", "passed": false, "evidence": "0 hits for MonoBehaviour — no class-level design"},
+        {"text": "PRD contains at least one ScriptableObject design", "passed": false, "evidence": "0 hits for ScriptableObject — generic data design language used"},
+        {"text": "PRD contains a Milestones section with an MVP definition", "passed": true, "evidence": "24-week development timeline with phases present"},
+        {"text": "PRD contains a SDD Handoff section with at least one Feature Breakdown entry", "passed": false, "evidence": "No SDD Handoff section — document doesn't serve as pipeline input"},
+        {"text": "PRD contains system contracts with C# interface signatures in Section 5.2", "passed": false, "evidence": "7 hits for 'interface' are English-language use, no C# signatures"},
+        {"text": "Assumptions made by Claude are labeled as such", "passed": false, "evidence": "0 hits for assumption labeling"}
+      ],
+      "notes": ["Without skill: 8× shorter output (21KB vs 88KB), missing all Unity-specific and pipeline-oriented sections"]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "roguelike-sdd",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 10,
+        "failed": 0,
+        "total": 10,
+        "time_seconds": 170.0,
+        "tokens": 44010,
+        "tool_calls": 4,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Output is a markdown file saved to the outputs folder", "passed": true, "evidence": "game_sdd.md at 62,007 characters"},
+        {"text": "SDD contains at least 3 named sprints", "passed": true, "evidence": "6 sprints with clear names"},
+        {"text": "Sprint 1 includes infrastructure tasks (project setup, Bootstrap scene, managers)", "passed": true, "evidence": "41 file path references; Sprint 1 covers GameManager, TurnManager, Bootstrap scene"},
+        {"text": "Each task specifies file paths to create or modify", "passed": true, "evidence": "41 Assets/ path references across tasks"},
+        {"text": "Each task includes implementation notes", "passed": true, "evidence": "Implementation Notes section in every task"},
+        {"text": "Each task has acceptance criteria checkboxes", "passed": true, "evidence": "116 checkbox entries (- [ ] pattern)"},
+        {"text": "SDD includes a dependency graph showing task relationships", "passed": true, "evidence": "Dependency Graph section with ASCII tree"},
+        {"text": "SDD includes a Post-MVP Backlog table", "passed": true, "evidence": "Post-MVP Backlog table with 15 items"},
+        {"text": "Tasks map to features from the PRD", "passed": true, "evidence": "Grid movement, turn resolution, and combat all have dedicated tasks"},
+        {"text": "Sprint ordering is logical", "passed": true, "evidence": "Infrastructure → movement → combat → classes — correct dependency order"}
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "roguelike-sdd",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.40,
+        "passed": 4,
+        "failed": 6,
+        "total": 10,
+        "time_seconds": 79.4,
+        "tokens": 39434,
+        "tool_calls": 2,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Output is a markdown file saved to the outputs folder", "passed": true, "evidence": "game_sdd.md at 21,202 characters"},
+        {"text": "SDD contains at least 3 named sprints", "passed": true, "evidence": "22 Sprint hits — 7 sprints (Sprint 0-6)"},
+        {"text": "Sprint 1 includes infrastructure tasks (project setup, Bootstrap scene, managers)", "passed": false, "evidence": "0 hits for Bootstrap or Assets/Scripts/Core — no specific Unity scene setup"},
+        {"text": "Each task specifies file paths to create or modify", "passed": false, "evidence": "0 hits for Assets/ path references — conceptual descriptions only"},
+        {"text": "Each task includes implementation notes", "passed": false, "evidence": "Only 3 hits for Implementation — tasks lack Unity-specific guidance"},
+        {"text": "Each task has acceptance criteria checkboxes", "passed": false, "evidence": "0 hits for - [ ] pattern — no per-task acceptance criteria"},
+        {"text": "SDD includes a dependency graph showing task relationships", "passed": false, "evidence": "No Dependency Graph section found"},
+        {"text": "SDD includes a Post-MVP Backlog table", "passed": false, "evidence": "No dedicated backlog table after Sprint 6"},
+        {"text": "Tasks map to features from the PRD", "passed": true, "evidence": "11 hits for Grid Movement, Turn Resolution, Combat"},
+        {"text": "Sprint ordering is logical", "passed": true, "evidence": "Foundation → dungeon gen → combat — logical ordering"}
+      ],
+      "notes": ["Without skill: tasks are conceptual descriptions, not actionable Unity implementation guides"]
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "roguelike-script",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.9,
+        "passed": 9,
+        "failed": 1,
+        "total": 10,
+        "time_seconds": 41.1,
+        "tokens": 30498,
+        "tool_calls": 4,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Output includes a complete C# script file saved to the outputs folder", "passed": true, "evidence": "TurnManager.cs (10,980 chars) + Interfaces.cs (2,410 chars)"},
+        {"text": "Script defines or references an IActable interface with at least a TakeAction method", "passed": true, "evidence": "IActable in Interfaces.cs with ExecuteAction method"},
+        {"text": "TurnManager has RegisterEntity and UnregisterEntity public methods", "passed": true, "evidence": "Both methods present"},
+        {"text": "TurnManager has SubmitPlayerAction method", "passed": true, "evidence": "SubmitPlayerAction present"},
+        {"text": "TurnManager has OnTurnResolutionStart and OnTurnResolutionEnd events", "passed": true, "evidence": "Both events declared and fired"},
+        {"text": "TurnManager has IsPlayerTurn property", "passed": true, "evidence": "IsPlayerTurn property present"},
+        {"text": "Script uses SerializeField for inspector-exposed values", "passed": true, "evidence": "[SerializeField] found for _debugMode field"},
+        {"text": "Script uses a namespace", "passed": true, "evidence": "Namespace found in both files"},
+        {"text": "Script includes XML doc comments on public methods", "passed": true, "evidence": "7 XML doc comment blocks found"},
+        {"text": "Output ends with a note about file path, Inspector setup, and next steps", "passed": false, "evidence": "Script ends with closing brace — no 📁 file path guidance note appended"}
+      ],
+      "notes": ["Missing: closing developer guidance note. Both with/without skill share this gap."]
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "roguelike-script",
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.9,
+        "passed": 9,
+        "failed": 1,
+        "total": 10,
+        "time_seconds": 34.0,
+        "tokens": 26973,
+        "tool_calls": 2,
+        "errors": 0
+      },
+      "expectations": [
+        {"text": "Output includes a complete C# script file saved to the outputs folder", "passed": true, "evidence": "TurnManager.cs (12,849 chars) + Interfaces.cs (1,709 chars)"},
+        {"text": "Script defines or references an IActable interface with at least a TakeAction method", "passed": true, "evidence": "IActable defined in Interfaces.cs"},
+        {"text": "TurnManager has RegisterEntity and UnregisterEntity public methods", "passed": true, "evidence": "Both methods present"},
+        {"text": "TurnManager has SubmitPlayerAction method", "passed": true, "evidence": "SubmitPlayerAction present"},
+        {"text": "TurnManager has OnTurnResolutionStart and OnTurnResolutionEnd events", "passed": true, "evidence": "Both events present"},
+        {"text": "TurnManager has IsPlayerTurn property", "passed": true, "evidence": "IsPlayerTurn present"},
+        {"text": "Script uses SerializeField for inspector-exposed values", "passed": true, "evidence": "[SerializeField] found"},
+        {"text": "Script uses a namespace", "passed": true, "evidence": "Namespace RoguelikeDungeonCrawler.TurnSystem declared"},
+        {"text": "Script includes XML doc comments on public methods", "passed": true, "evidence": "56 XML doc comment lines — more thorough than with_skill"},
+        {"text": "Output ends with a note about file path, Inspector setup, and next steps", "passed": false, "evidence": "Script ends with closing brace — no developer guidance note"}
+      ],
+      "notes": ["Both configurations produce nearly identical quality C# code. The without_skill version had MORE XML doc comments (56 vs 7)."]
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {"mean": 0.97, "stddev": 0.06, "min": 0.9, "max": 1.0},
+      "time_seconds": {"mean": 271.1, "stddev": 256.6, "min": 41.1, "max": 602.3},
+      "tokens": {"mean": 47526, "stddev": 18841, "min": 30498, "max": 68071}
+    },
+    "without_skill": {
+      "pass_rate": {"mean": 0.58, "stddev": 0.25, "min": 0.40, "max": 0.90},
+      "time_seconds": {"mean": 62.8, "stddev": 22.9, "min": 34.0, "max": 79.4},
+      "tokens": {"mean": 32100, "stddev": 6490, "min": 26973, "max": 39434}
+    },
+    "delta": {
+      "pass_rate": "+0.39",
+      "time_seconds": "+208.3",
+      "tokens": "+15426"
+    }
+  },
+  "notes": [
+    "PRD and SDD skills show massive uplift: 100% vs 44%/40% pass rate — skills are essential for Unity-specific pipeline output",
+    "Script skill shows minimal uplift (90% vs 90%) — Claude already writes good C# without guidance. The skill's value is structural consistency, not correctness",
+    "PRD with_skill takes 10× longer (602s vs 75s) — the template is very comprehensive. Consider if a shorter 'solo dev mode' variant is worth adding",
+    "The one shared failure across all script runs: closing developer guidance note not appended after code. The unity-script skill should enforce this more explicitly",
+    "SDD with_skill produces 3× more content (62KB vs 21KB) with file paths, checkboxes, dependency graph — all critical for solo dev usability"
+  ]
+}

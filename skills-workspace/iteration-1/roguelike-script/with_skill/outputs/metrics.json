@@ -1,0 +1,32 @@
+{
+  "task": "Generate TurnManager system for roguelike dungeon crawler",
+  "tool_calls": 3,
+  "files_generated": 2,
+  "output_chars": 12537,
+  "files": [
+    {
+      "name": "TurnManager.cs",
+      "description": "Main turn management system with singleton pattern, turn queue, player/enemy registration, and turn resolution logic"
+    },
+    {
+      "name": "Interfaces.cs",
+      "description": "IActable and IAction interfaces defining the contract for combat entities and their actions"
+    }
+  ],
+  "features_implemented": [
+    "Turn queue management for player and enemies",
+    "Speed-ordered enemy iteration during resolution",
+    "OnTurnResolutionStart and OnTurnResolutionEnd events",
+    "Entity-specific turn events (OnEntityTurnStart, OnEntityTurnEnd)",
+    "IActable interface registration/unregistration system",
+    "Default IAction implementation for basic actions",
+    "Debug mode logging for turn resolution tracking",
+    "Null safety and validation throughout"
+  ],
+  "stack": {
+    "pipeline": "URP",
+    "input_system": "New Input System",
+    "physics": "2D",
+    "unity_version": "2022 LTS"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "eval_id": 1,
+  "eval_name": "roguelike-prd",
+  "prompt": "I want to build a roguelike dungeon crawler — procedurally generated dungeons, turn-based combat, pixel art. PC only. The player picks a class at the start (Warrior, Rogue, or Mage), finds items and equipment in dungeons, and fights through floors with a boss every 5 levels. Permadeath but with meta-progression unlocks between runs. Please create a full PRD for this game.",
+  "assertions": []
+}

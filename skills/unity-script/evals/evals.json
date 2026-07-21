@@ -1,0 +1,23 @@
+{
+  "skill_name": "unity-script",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Generate a complete Unity C# script for the TurnManager system in our roguelike dungeon crawler. It needs to: manage a turn queue of entities (player + enemies), expose SubmitPlayerAction() that triggers turn resolution, iterate through all registered enemies after the player acts (in speed order), expose events OnTurnResolutionStart and OnTurnResolutionEnd, and implement the IActable interface registration/unregistration. The game is 2D, URP, new Input System, Unity 2022 LTS.",
+      "expected_output": "A complete, compilable C# script file for TurnManager.cs following Unity best practices: proper namespace, SerializeField usage, XML doc comments on public API, events, the IActable interface definition, RequireComponent if needed, cached references, and a closing note with file path and Inspector setup instructions.",
+      "files": [],
+      "expectations": [
+        "Output includes a complete C# script file saved to the outputs folder",
+        "Script defines or references an IActable interface with at least a TakeAction method",
+        "TurnManager has RegisterEntity and UnregisterEntity public methods",
+        "TurnManager has SubmitPlayerAction method",
+        "TurnManager has OnTurnResolutionStart and OnTurnResolutionEnd events",
+        "TurnManager has IsPlayerTurn property",
+        "Script uses SerializeField (not public fields) for any inspector-exposed values",
+        "Script uses a namespace",
+        "Script includes XML doc comments on public methods",
+        "Output ends with a note about file path, Inspector setup, and next steps"
+      ]
+    }
+  ]
+}
